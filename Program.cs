@@ -37,6 +37,9 @@ builder.Services.AddEndpointsApiExplorer();
 
 //connect resourse conc to handle frontend requests
 builder.Services.AddCors();
+builder.WebHost.CaptureStartupErrors(true)
+               .UseSetting("detailedErrors", "true");
+
 
 // Configure MongoDB
 var mongoDbSettings = builder.Configuration.GetSection("MongoDbSettings").Get<MongoDbSettings>();
