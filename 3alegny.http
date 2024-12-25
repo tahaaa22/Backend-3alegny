@@ -1,0 +1,6 @@
+@_3alegny_HostAddress = http://localhost:5039
+
+GET {{_3alegny_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
