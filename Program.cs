@@ -46,7 +46,7 @@ builder.WebHost.CaptureStartupErrors(true)
 //var dbContext = new MongoDbContext(mongoDbSettings.ConnectionString, mongoDbSettings.DatabaseName);
 
 // Dependency Injection
-builder.Services.AddSingleton(dbContext);
+//builder.Services.AddSingleton(dbContext);
 builder.Services.AddScoped<UserLogic>();
 builder.Services.AddScoped<AdminLogic>();
 builder.Services.AddScoped<PatientLogic>();
