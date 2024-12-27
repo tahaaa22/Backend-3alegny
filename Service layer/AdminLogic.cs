@@ -29,15 +29,15 @@ namespace _3alegny.Service_layer
 
             var hospital = new Hospital
             {
-                 Name = request.Name,
-                  UserName= request.UserName,
-                  Role = request.Role,
-                  Password = HashPassword(request.Password),
-                  contactInfo = request.contactInfo,
-                  Address = request.Address,
-                  CreatedAt = request.CreatedAt,
-                  UpdatedAt = request.UpdatedAt,
-                  DeletedAt = request.CreatedAt
+                Name = request.Name,
+                UserName = request.UserName,
+                Role = request.Role,
+                Password = HashPassword(request.Password),
+                contactInfo = request.contactInfo,
+                Address = request.Address,
+                CreatedAt = request.CreatedAt,
+                UpdatedAt = request.UpdatedAt,
+                DeletedAt = request.CreatedAt
             };
 
             await _context.Hospitals.InsertOneAsync(hospital);

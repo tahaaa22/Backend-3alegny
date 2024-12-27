@@ -1,4 +1,4 @@
-﻿    
+﻿
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
 
@@ -6,7 +6,7 @@ namespace _3alegny.Entities
 {
     public class Order
     {
-        public ObjectId OrderId { get; set; } 
+        public ObjectId OrderId { get; set; }
         public string PatientId { get; set; }
         public Patient Patient { get; set; }
         public string PharmacyId { get; set; }

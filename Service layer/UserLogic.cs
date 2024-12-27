@@ -86,9 +86,3 @@ namespace _3alegny.Service_layer
         }
     }
 }
-
-
-
-
-
-

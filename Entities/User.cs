@@ -4,10 +4,10 @@ using MongoDB.Bson.Serialization.Attributes;
 namespace _3alegny.Entities
 {
     [BsonDiscriminator(RootClass = true)]
-    [BsonKnownTypes(typeof(Admin),typeof(Patient), typeof(Hospital), typeof(Pharmacy))]
+    [BsonKnownTypes(typeof(Admin), typeof(Patient), typeof(Hospital), typeof(Pharmacy))]
     public class User
     {
-        public ObjectId Id { get; set; } 
+        public ObjectId Id { get; set; }
         public string? Name { get; set; }
         public string? UserName { get; set; }
         public string? Role { get; set; } = "Patient"; //FIXME: change it to an enum
@@ -38,7 +38,10 @@ namespace _3alegny.Entities
         public List<Insurance>? Insurance { get; set; }
         public float Height { get; set; }
         public float Weight { get; set; }
-        
+        public List<EHR> EHR { get; set; } = new List<EHR>();
+
+
+
 
     }
 
@@ -49,15 +52,16 @@ namespace _3alegny.Entities
         public List<EHR> EHRs { get; set; } = new List<EHR>();
         public List<Appointments> Appointments { get; set; } = new List<Appointments>();
         public Double? Rating { get; set; } = 0.0;
-        public List<Doctors> Doctors { get; set; } = new List<Doctors> ();
-        public List<Insurance> InsuranceAccepted { get; set; } = new List<Insurance>();   
+        public List<Doctors> Doctors { get; set; } = new List<Doctors>();
+        public List<Insurance> InsuranceAccepted { get; set; } = new List<Insurance>();
     }
 
+    // Subclass: Pharmacy
     // Subclass: Pharmacy
     public class Pharmacy : User
     {
         public List<Order> Orders { get; set; } = new List<Order>();
-        public List<Drugs> Drugs { get; set; } = new List< Drugs>();
+        public List<Drugs> Drugs { get; set; } = new List<Drugs>();
         public Double Rating { get; set; } = 0.0;
     }
 }

@@ -33,9 +33,9 @@ namespace _3alegny.Service_layer
         public async Task<string> AddDoctor(Doctors doctor)
 
         {   // Ensure the doctor's ID is generated
-            if (string.IsNullOrEmpty(doctor.Id) || !ObjectId.TryParse(doctor.Id, out _))
+            if (string.IsNullOrEmpty(doctor.Id.ToString()) || !ObjectId.TryParse(doctor.Id.ToString(), out _))
             {
-                doctor.Id = ObjectId.GenerateNewId().ToString();
+                doctor.Id = ObjectId.GenerateNewId();
             }
 
 
@@ -44,7 +44,7 @@ namespace _3alegny.Service_layer
             if (hospital == null)
                 throw new Exception("Hospital not found");
 
-            
+
 
             // Check if the doctor's specialty matches an existing department in the hospital
             var matchingDepartment = hospital.Departments.FirstOrDefault(dept => dept.Name.Equals(doctor.Specialty, StringComparison.OrdinalIgnoreCase));
@@ -65,17 +65,17 @@ namespace _3alegny.Service_layer
                 throw new Exception("Invalid doctor ID");
 
             // Find the hospital that contains the doctor
-            var hospital = await _context.Hospitals.Find(h => h.Doctors.Any(d => d.Id == doctorId)).FirstOrDefaultAsync();
+            var hospital = await _context.Hospitals.Find(h => h.Doctors.Any(d => d.Id.ToString() == doctorId)).FirstOrDefaultAsync();
             if (hospital == null)
                 throw new Exception("Doctor not found");
 
             // Find the index of the doctor in the list
-            var doctorIndex = hospital.Doctors.FindIndex(d => d.Id == doctorId);
+            var doctorIndex = hospital.Doctors.FindIndex(d => d.Id.ToString() == doctorId);
             if (doctorIndex == -1)
                 throw new Exception("Doctor not found");
 
             // If the doctor exists, we update their details
-            updatedDoctor.Id = doctorId;  // Keep the original doctor ID
+            updatedDoctor.Id = ObjectId.Parse(doctorId);  // Keep the original doctor ID
             hospital.Doctors[doctorIndex] = updatedDoctor;
 
             // Save the updated hospital document
@@ -92,12 +92,12 @@ namespace _3alegny.Service_layer
                 throw new Exception("Invalid doctor ID");
 
             // Find the hospital that contains the doctor
-            var hospital = await _context.Hospitals.Find(h => h.Doctors.Any(d => d.Id == doctorId)).FirstOrDefaultAsync();
+            var hospital = await _context.Hospitals.Find(h => h.Doctors.Any(d => d.Id.ToString() == doctorId)).FirstOrDefaultAsync();
             if (hospital == null)
                 throw new Exception("Hospital not found");
 
             // Find the doctor in the hospital's doctor list
-            var doctor = hospital.Doctors.FirstOrDefault(d => d.Id == doctorId);
+            var doctor = hospital.Doctors.FirstOrDefault(d => d.Id.ToString() == doctorId);
             if (doctor == null)
                 throw new Exception("Doctor not found");
 
@@ -109,6 +109,19 @@ namespace _3alegny.Service_layer
 
             return "Doctor deleted successfully";
         }
+
+        public async Task<string> CreateEHR(EHR ehr)
+        {
+            // Check if the patient already has an EHR
+            var existingEHR = await _context.EHRs.Find(e => e.PatientId == ehr.PatientId).FirstOrDefaultAsync();
+            if (existingEHR != null)
+                throw new Exception("EHR already exists for the patient");
+
+            // Insert the new EHR
+            await _context.EHRs.InsertOneAsync(ehr);
+            return "EHR created successfully";
+        }
+
 
     }
 }

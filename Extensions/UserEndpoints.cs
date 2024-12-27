@@ -48,7 +48,3 @@ public static class UserEndpoints
 
     public record LoginRequest(string UserName, string Password);
 }
-
-
-
-

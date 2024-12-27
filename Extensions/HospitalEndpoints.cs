@@ -9,7 +9,7 @@ public static class HospitalEndpoints
     public static void MapHospitalEndpoints(this WebApplication app)
     {
         // POST endpoint to add a new department
-        app.MapPost("/post-departments", async ([FromBody]  HospitalLogic logic, string hospitalId, string departmentName) =>
+        app.MapPost("/post-departments", async ([FromServices] HospitalLogic logic, string hospitalId, string departmentName) =>
         {
             try
             {
@@ -30,7 +30,7 @@ public static class HospitalEndpoints
         });
 
         // POST endpoint to add a new doctor
-        app.MapPost("/post-doctors", async ([FromBody] HospitalLogic logic, [FromServices] Doctors doctor) =>
+        app.MapPost("/post-doctors", async ([FromServices] HospitalLogic logic, [FromBody] Doctors doctor) =>
         {
             try
             {
@@ -52,7 +52,7 @@ public static class HospitalEndpoints
 
 
         // PUT endpoint to retrieve and update a doctor by ID
-        app.MapPut("/upsert-doctor/{doctorId}", async ([FromBody] HospitalLogic logic, string doctorId, [FromServices] Doctors updatedDoctor) =>
+        app.MapPut("/upsert-doctor/{doctorId}", async ([FromServices] HospitalLogic logic, string doctorId, [FromBody] Doctors updatedDoctor) =>
         {
             try
             {
@@ -74,7 +74,7 @@ public static class HospitalEndpoints
 
 
         // DELETE endpoint to remove a doctor by ID
-        app.MapDelete("/delete-doctor/{doctorId}", async ([FromBody] HospitalLogic logic, string doctorId) =>
+        app.MapDelete("/delete-doctor/{doctorId}", async ([FromServices] HospitalLogic logic, string doctorId) =>
         {
             try
             {
@@ -93,6 +93,28 @@ public static class HospitalEndpoints
             Description = "Removes a doctor from the hospital's doctor list by their ID.",
             OperationId = "DeleteDoctorById"
         });
+
+        app.MapPost("/post-ehr", async ([FromServices]HospitalLogic logic, [FromBody] EHR ehr) =>
+        {
+            try
+            {
+                var result = await logic.CreateEHR(ehr);
+                return Results.Ok(new { Success = true, Message = result, PatientId = ehr.PatientId });
+            }
+            catch (Exception e)
+            {
+                return Results.BadRequest(new { Success = false, Message = e.Message });
+            }
+        })
+        .WithTags("EHR")
+        .WithOpenApi(operation => new(operation)
+        {
+            Summary = "Create a new EHR for a patient",
+            Description = "Adds a new EHR record for a patient if they don't already have one.",
+            OperationId = "CreateEHR"
+        });
+
+
+
     }
 }
-
