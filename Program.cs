@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authentication;
 var builder = WebApplication.CreateBuilder(args);
 
 // Load .env file
-Env.Load();
+//Env.Load();
 
 //Configure connection string from environment variable
 //var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DBCon");
@@ -42,8 +42,8 @@ builder.WebHost.CaptureStartupErrors(true)
 
 
 // Configure MongoDB
-var mongoDbSettings = builder.Configuration.GetSection("MongoDbSettings").Get<MongoDbSettings>();
-var dbContext = new MongoDbContext(mongoDbSettings.ConnectionString, mongoDbSettings.DatabaseName);
+//var mongoDbSettings = builder.Configuration.GetSection("MongoDbSettings").Get<MongoDbSettings>();
+//var dbContext = new MongoDbContext(mongoDbSettings.ConnectionString, mongoDbSettings.DatabaseName);
 
 // Dependency Injection
 builder.Services.AddSingleton(dbContext);
