@@ -11,16 +11,16 @@ var builder = WebApplication.CreateBuilder(args);
 Env.Load();
 
 //Configure connection string from environment variable
-var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DBCon");
-if (string.IsNullOrEmpty(connectionString))
-{
-    //throw new Exception("Connection string not found. Ensure the .env file is correctly configured and placed in the root directory.");
+//var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DBCon");
+//if (string.IsNullOrEmpty(connectionString))
+//{
+//    //throw new Exception("Connection string not found. Ensure the .env file is correctly configured and placed in the root directory.");
 
-    //Add connection string to the applications configuration system
-    builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
-{ {"ConnectionStrings:DBCon", connectionString }
-});
-}
+//    //Add connection string to the applications configuration system
+//    builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+//{ {"ConnectionStrings:DBCon", connectionString }
+//});
+//}
 
 builder.Services.AddSwaggerGen(options =>
 {
