@@ -5,6 +5,7 @@ using MongoDB.Driver;
 using static UserEndpoints;
 using MongoDB.Bson;
 using UserLoginRequest = UserEndpoints.LoginRequest;
+using System.Reflection;
 
 
 
@@ -21,9 +22,6 @@ namespace _3alegny.Service_layer
 
         public async Task<(bool IsSuccess, string Message)> Signup(SignupRequest request)
         {
-            // Check if passwords match
-            if (request.CreatePassword != request.ConfirmPassword)
-                return (false, "Passwords do not match.");
 
             // Check if username already exists
             var existingUser = await _context.Patients.Find(Builders<Patient>.Filter.Eq(u => u.UserName, request.UserName)).FirstOrDefaultAsync();
@@ -31,25 +29,28 @@ namespace _3alegny.Service_layer
             if (existingUser != null)
                 return (false, "Username already exists.");
 
-            // Create the user
-            // TODO: fix patient obj and change it to user until verification
             var user = new Patient
             {
                 Name = request.Name,
+                UserName = request.UserName,
+                Role = UserRole.Patient,
+                DateOfBirth = request.DateOfBirth,
                 Gender = request.Gender,
+                Password = HashPassword(request.Password),
                 contactInfo = new ContactInfo
                 {
-                    Phone = request.ContactInfo // Assuming ContactInfo is just a phone number for now
+                    Phone = request.Phone,
+                    Email = request.Email
                 },
                 Address = new Address
                 {
-                    Street = request.Address // Assuming Address is a single line for now
+                    Street = request.Street,
+                    City = request.City,
+                    State = request.state,
+                    ZipCode = request.ZipCode
                 },
-
-                UserName = request.UserName,
-                Password = HashPassword(request.CreatePassword), // Use a hashing function
-                CreatedAt = DateTime.UtcNow,
-                Role = UserRole.Patient // Default role
+                CreatedAt = DateTime.UtcNow
+                 
             };
 
             await _context.Patients.InsertOneAsync(user);
@@ -57,20 +58,41 @@ namespace _3alegny.Service_layer
             return (true, "Signup successful.");
         }
 
-        public async Task<(bool IsSuccess, string Message)> Login(UserLoginRequest request)
 
+        public async Task<LoginResponse> Login(UserLoginRequest request)
         {
-            // Find user by username
-            var user = await _context.Patients.Find(u => u.UserName == request.UserName).FirstOrDefaultAsync();
+            User user = await _context.Patients.Find(u => u.UserName == request.UserName).FirstOrDefaultAsync();
+
             if (user == null)
-                return (false, "Invalid username or password.");
+                user = await _context.Hospitals.Find(u => u.UserName == request.UserName).FirstOrDefaultAsync();
 
-            // Verify password
+            if (user == null)
+                user = await _context.Pharmacies.Find(u => u.UserName == request.UserName).FirstOrDefaultAsync();
+
+            if (user == null)
+                user = await _context.Admin.Find(u => u.UserName == request.UserName).FirstOrDefaultAsync();
+
+            if (user == null)
+            {
+                return new LoginResponse { IsSuccess = false, Message = "User not found." };
+            }
+
             if (!VerifyPassword(request.Password, user.Password))
-                return (false, "Invalid username or password.");
+            {
+                return new LoginResponse { IsSuccess = false, Message = "Wrong username/password." };
+            }
 
-            return (true, "Login successful.");
+            return new LoginResponse
+            {
+                IsSuccess = true,
+                UserName = user.UserName,
+                ID = user.Id.ToString(),
+                Role = user.Role.ToString(),
+                Message = "User login succeeded."
+            };
         }
+
+
 
         private string HashPassword(string password)
         {
@@ -83,6 +105,21 @@ namespace _3alegny.Service_layer
             var hasher = new PasswordHasher<string>();
             var result = hasher.VerifyHashedPassword(null, storedPassword, providedPassword);
             return result == PasswordVerificationResult.Success;
+        }
+
+        public class SignUpResponse<T>
+        {
+            public bool IsSuccess { get; set; }
+            public T? Data { get; set; }
+            public string? Message { get; set; }
+        }
+        public class LoginResponse
+        {
+            public bool IsSuccess { get; set; }
+            public string? UserName { get; set; }
+            public string? ID { get; set; }
+            public string? Role { get; set; }
+            public string? Message { get; set; }
         }
     }
 }

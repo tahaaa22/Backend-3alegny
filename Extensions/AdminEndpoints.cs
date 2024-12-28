@@ -35,14 +35,19 @@ public static class AdminEndpoints
         //Admin - Receives data from the frontend and creates a new business. (pharmcies / hospital)
         app.MapPost("/admin/create/Business", async ([FromBody] User request, [FromServices] AdminLogic logic) =>
         {
-            AdminResult<User> business = new AdminResult<User>{ IsSuccess = true, Data = request, Message = "initial creation "  };
-            //if(request.Role == UserRole.Hospital)
-            //     business = await logic.CreateBusiness<Hospital>(request, _context.Hospitals, UserRole.Hospital);
-            //if(request.Role == UserRole.Hospital)
-            //     business = await logic.CreateBusiness<Pharmacy>(request, _context.Pharmacies, UserRole.Pharmacy);
+            if (request.Role == UserRole.Hospital)
+            {
+                AdminResult<Hospital> business = await logic.CreateBusiness<Hospital>(request, UserRole.Hospital);
+                return business.IsSuccess ? Results.Ok(business.Message) : Results.BadRequest(business.Message);
+            }
 
+            if (request.Role == UserRole.Hospital)
+            {
+                AdminResult<Pharmacy> business = await logic.CreateBusiness<Pharmacy>(request, UserRole.Pharmacy);
+                return business.IsSuccess ? Results.Ok(business.Message) : Results.BadRequest(business.Message);
 
-            return business.IsSuccess ? Results.Ok(business.Message) : Results.BadRequest(business.Message);
+            }
+            return Results.BadRequest("admin failed to create the business");
         }).WithTags("admin")
           .WithOpenApi(operation => new(operation)
           {

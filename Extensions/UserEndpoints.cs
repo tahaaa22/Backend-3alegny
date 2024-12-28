@@ -25,7 +25,7 @@ public static class UserEndpoints
         app.MapPost("users/login", (Func<LoginRequest, UserLogic, IResult>)((request, logic) =>
         {
             var result = logic.Login(request).Result;
-            return result.IsSuccess ? Results.Ok(result.Message) : Results.BadRequest(result.Message);
+            return result.IsSuccess ? Results.Ok(result) : Results.BadRequest(result.Message);
         })).WithTags("User")
             .WithOpenApi(operation => new(operation)
             {
@@ -37,13 +37,16 @@ public static class UserEndpoints
 
     public record SignupRequest(
        string Name,
-       DateTime DateBirth,
-       string Gender,
-       string ContactInfo,
-       string Address,
        string UserName,
-       string CreatePassword,
-       string ConfirmPassword
+       string Password,
+       DateTime DateOfBirth,
+       string Gender,
+       string Phone,
+       string Email,
+       string Street,
+       string City,
+       string state,
+       string ZipCode
    );
 
     public record LoginRequest(string UserName, string Password);

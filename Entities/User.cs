@@ -51,7 +51,7 @@ namespace _3alegny.Entities
         public List<Order> Orders { get; set; } = new List<Order>();
         public List<Appointments> Appointments { get; set; } = new List<Appointments>();
         public DateTime DateOfBirth { get; set; }
-        public string? Gender { get; set; }
+        public string Gender { get; set; }
         public List<Insurance>? Insurance { get; set; }
         public float Height { get; set; }
         public float Weight { get; set; }

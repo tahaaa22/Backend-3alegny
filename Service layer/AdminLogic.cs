@@ -17,13 +17,26 @@ namespace _3alegny.Service_layer
             _context = context;
         }
 
-        // operation to create Business
-        public async Task<AdminResult<T>> CreateBusiness<T>(User request, IMongoCollection<T> collection, UserRole role) where T : User, new()
+        public async Task<AdminResult<T>> CreateBusiness<T>(User request, UserRole role) where T : User, new()
         {
-            var existingEntity = await collection.Find(Builders<T>.Filter.Eq(u => u.UserName, request.UserName)).FirstOrDefaultAsync();
+            var collection = role switch
+            {
+                UserRole.Hospital => (IMongoCollection<T>)_context.Hospitals,
+                UserRole.Pharmacy => (IMongoCollection<T>)_context.Pharmacies,
+                _ => throw new ArgumentException("Invalid user role", nameof(role))
+            };
+
+            var filter = Builders<T>.Filter.Eq(u => u.UserName, request.UserName);
+
+            var existingEntity = await collection.Find(filter).FirstOrDefaultAsync();
             if (existingEntity != null)
             {
-                return new AdminResult<T> { IsSuccess = false, Data = existingEntity, Message = "Error: duplicate entity" };
+                return new AdminResult<T>
+                {
+                    IsSuccess = false,
+                    Data = existingEntity,
+                    Message = "Error: duplicate entity"
+                };
             }
 
             var entity = new T
@@ -41,8 +54,14 @@ namespace _3alegny.Service_layer
 
             await collection.InsertOneAsync(entity);
 
-            return new AdminResult<T> { IsSuccess = true, Data = entity, Message = $"{typeof(T).Name} {entity.Name} created successfully" };
+            return new AdminResult<T>
+            {
+                IsSuccess = true,
+                Data = entity,
+                Message = $"{typeof(T).Name} {entity.Name} created successfully"
+            };
         }
+
 
 
         private string HashPassword(string password)
