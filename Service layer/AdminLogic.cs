@@ -82,7 +82,7 @@ namespace _3alegny.Service_layer
                 {
                     return new AdminResult<List<Patient>> { IsSuccess = false, Message = "No Patients found." };
                 }
-                return new AdminResult<List<Patient>> { IsSuccess = true, Data = Patients };
+                return new AdminResult<List<Patient>> { IsSuccess = true, Data = Patients , Message = "all users returned"};
             }
             catch (Exception ex)
             {
@@ -101,7 +101,7 @@ namespace _3alegny.Service_layer
                 {
                     return new AdminResult<User> { IsSuccess = false, Message = "User not found." };
                 }
-                return new AdminResult<User> { IsSuccess = true, Data = user };
+                return new AdminResult<User> { IsSuccess = true, Data = user, Message = $"user with {id} valid" };
             }
             catch (Exception ex)
             {
@@ -138,5 +138,5 @@ public class AdminResult<T>
     public bool IsSuccess { get; set; }
     public T? Data { get; set; }
     public string? Role { get; set; }
-    public string? Message { get; set; }
+    public required string Message { get; set; }
 }
