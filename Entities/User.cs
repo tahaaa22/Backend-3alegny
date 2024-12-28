@@ -3,6 +3,23 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace _3alegny.Entities
 {
+    using MongoDB.Bson.Serialization.Attributes;
+
+    public enum UserRole
+    {
+        [BsonRepresentation(BsonType.String)]
+        Admin,
+
+        [BsonRepresentation(BsonType.String)]
+        Patient,
+
+        [BsonRepresentation(BsonType.String)]
+        Hospital,
+
+        [BsonRepresentation(BsonType.String)]
+        Pharmacy
+    }
+
     [BsonDiscriminator(RootClass = true)]
     [BsonKnownTypes(typeof(Admin), typeof(Patient), typeof(Hospital), typeof(Pharmacy))]
     public class User
@@ -10,9 +27,9 @@ namespace _3alegny.Entities
         public ObjectId Id { get; set; }
         public string? Name { get; set; }
         public string? UserName { get; set; }
-        public string? Role { get; set; } = "Patient"; //FIXME: change it to an enum
+        public UserRole Role { get; set; } = UserRole.Patient;
         public string? Password { get; set; }
-        public ContactInfo contactInfo { get; set; }
+        public ContactInfo? contactInfo { get; set; }
         public Address? Address { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }

@@ -37,7 +37,7 @@ public static class UserEndpoints
 
     public record SignupRequest(
        string Name,
-       int Age,
+       DateTime DateBirth,
        string Gender,
        string ContactInfo,
        string Address,

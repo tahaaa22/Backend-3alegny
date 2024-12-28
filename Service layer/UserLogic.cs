@@ -49,7 +49,7 @@ namespace _3alegny.Service_layer
                 UserName = request.UserName,
                 Password = HashPassword(request.CreatePassword), // Use a hashing function
                 CreatedAt = DateTime.UtcNow,
-                Role = "patient" // Default role
+                Role = UserRole.Patient // Default role
             };
 
             await _context.Patients.InsertOneAsync(user);

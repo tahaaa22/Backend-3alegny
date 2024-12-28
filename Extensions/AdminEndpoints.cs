@@ -2,6 +2,9 @@
 using _3alegny.Entities;
 using MongoDB.Bson;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using SharpCompress.Common;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 public static class AdminEndpoints
@@ -29,27 +32,33 @@ public static class AdminEndpoints
             return result.IsSuccess ? Results.Ok(result.Message) : Results.NotFound(result.Message);
         })).WithTags("admin");
 
-        app.MapPost("/admin/create/hospital", async ([FromBody] HospitalRequest request, [FromServices] AdminLogic logic) =>
+        //Admin - Receives data from the frontend and creates a new business. (pharmcies / hospital)
+        app.MapPost("/admin/create/Business", async ([FromBody] User request, [FromServices] AdminLogic logic) =>
         {
-            var hospital = await logic.CreateHopital(request);
+            AdminResult<User> business = new AdminResult<User>{ IsSuccess = true, Data = request, Message = "initial creation "  };
+            //if(request.Role == UserRole.Hospital)
+            //     business = await logic.CreateBusiness<Hospital>(request, _context.Hospitals, UserRole.Hospital);
+            //if(request.Role == UserRole.Hospital)
+            //     business = await logic.CreateBusiness<Pharmacy>(request, _context.Pharmacies, UserRole.Pharmacy);
 
-            return hospital.IsSuccess ? Results.Ok(hospital.Message) : Results.BadRequest(hospital.Message);
+
+            return business.IsSuccess ? Results.Ok(business.Message) : Results.BadRequest(business.Message);
         }).WithTags("admin")
           .WithOpenApi(operation => new(operation)
           {
-              Summary = "Create a Hospital",
-              Description = "Receives hospital data from the frontend and creates a new hospital.",
-              OperationId = "CreateHospital"
+              Summary = "creates a new business. (pharmcies / hospital)",
+              Description = "Receives Business data from the frontend and creates a new business. (pharmcies / hospital).",
+              OperationId = "CreateBusiness"
           });
 
     }
 
 
 
-    public record HospitalRequest(
+    public record BusinessRequest(
      string Name,
      string UserName,
-     string Role,
+     UserRole Role,
      string Password,
      ContactInfo contactInfo,
      Address Address,

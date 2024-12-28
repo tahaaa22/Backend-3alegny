@@ -17,21 +17,20 @@ namespace _3alegny.Service_layer
             _context = context;
         }
 
-        // operation to create hospital
-        public async Task<AdminResult<Hospital>> CreateHopital(HospitalRequest request)
+        // operation to create Business
+        public async Task<AdminResult<T>> CreateBusiness<T>(User request, IMongoCollection<T> collection, UserRole role) where T : User, new()
         {
-            // Check if username already exists
-            var existingUser = await _context.Hospitals.Find(Builders<Hospital>.Filter.Eq(u => u.UserName, request.UserName)).FirstOrDefaultAsync();
+            var existingEntity = await collection.Find(Builders<T>.Filter.Eq(u => u.UserName, request.UserName)).FirstOrDefaultAsync();
+            if (existingEntity != null)
+            {
+                return new AdminResult<T> { IsSuccess = false, Data = existingEntity, Message = "Error: duplicate entity" };
+            }
 
-            if (existingUser != null)
-                return new AdminResult<Hospital> { IsSuccess = false, Data = existingUser, Message = "Error: duplicate hospitals" };
-
-
-            var hospital = new Hospital
+            var entity = new T
             {
                 Name = request.Name,
                 UserName = request.UserName,
-                Role = request.Role,
+                Role = role,
                 Password = HashPassword(request.Password),
                 contactInfo = request.contactInfo,
                 Address = request.Address,
@@ -40,10 +39,11 @@ namespace _3alegny.Service_layer
                 DeletedAt = request.CreatedAt
             };
 
-            await _context.Hospitals.InsertOneAsync(hospital);
+            await collection.InsertOneAsync(entity);
 
-            return new AdminResult<Hospital> { IsSuccess = true, Data = hospital, Message = $"Hospital {hospital.Name} created successful" };
+            return new AdminResult<T> { IsSuccess = true, Data = entity, Message = $"{typeof(T).Name} {entity.Name} created successfully" };
         }
+
 
         private string HashPassword(string password)
         {
