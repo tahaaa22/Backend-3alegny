@@ -23,14 +23,14 @@ public static class AdminEndpoints
         {
             var result = logic.GetUserById(id).Result;
             return result.IsSuccess ? Results.Ok(result.Data) : Results.NotFound(result.Message);
-        })).WithTags("admin");
+        })).WithTags("Admin");
 
         // Admin - Delete a user
         app.MapDelete("/admin/user/{id}", (Func<string, AdminLogic, IResult>)((id, logic) =>
         {
             var result = logic.DeleteUser(id).Result;
             return result.IsSuccess ? Results.Ok(result.Message) : Results.NotFound(result.Message);
-        })).WithTags("admin");
+        })).WithTags("Admin");
 
         //Admin - Receives data from the frontend and creates a new business. (pharmcies / hospital)
         app.MapPost("/admin/create/Business", async ([FromBody] User request, [FromServices] AdminLogic logic) =>
@@ -43,7 +43,7 @@ public static class AdminEndpoints
 
 
             return business.IsSuccess ? Results.Ok(business.Message) : Results.BadRequest(business.Message);
-        }).WithTags("admin")
+        }).WithTags("Admin")
           .WithOpenApi(operation => new(operation)
           {
               Summary = "creates a new business. (pharmcies / hospital)",
