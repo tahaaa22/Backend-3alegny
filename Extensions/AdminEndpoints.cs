@@ -33,18 +33,18 @@ public static class AdminEndpoints
         })).WithTags("Admin");
 
         //Admin - Receives data from the frontend and creates a new business. (pharmcies / hospital)
-        app.MapPost("/admin/create/Business", async ([FromBody] User request, [FromServices] AdminLogic logic) =>
+        app.MapPost("/admin/create/Business", async ([FromBody] BusinessRequest request, [FromServices] AdminLogic logic) =>
         {
-            if (request.Role == UserRole.Hospital)
+            if (request.Role == UserRole.Hospital.ToString())
             {
                 AdminResult<Hospital> business = await logic.CreateBusiness<Hospital>(request, UserRole.Hospital);
-                return business.IsSuccess ? Results.Ok(business.Message) : Results.BadRequest(business.Message);
+                return business.IsSuccess ? Results.Ok(business) : Results.BadRequest(business.Message);
             }
 
-            if (request.Role == UserRole.Hospital)
+            if (request.Role == UserRole.Pharmacy.ToString())
             {
                 AdminResult<Pharmacy> business = await logic.CreateBusiness<Pharmacy>(request, UserRole.Pharmacy);
-                return business.IsSuccess ? Results.Ok(business.Message) : Results.BadRequest(business.Message);
+                return business.IsSuccess ? Results.Ok(business) : Results.BadRequest(business.Message);
 
             }
             return Results.BadRequest("admin failed to create the business");
@@ -61,7 +61,7 @@ public static class AdminEndpoints
     public record BusinessRequest(
      string Name,
      string UserName,
-     UserRole Role,
+     string Role,
      string Password,
      ContactInfo contactInfo,
      Address Address,

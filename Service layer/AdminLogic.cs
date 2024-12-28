@@ -17,7 +17,7 @@ namespace _3alegny.Service_layer
             _context = context;
         }
 
-        public async Task<AdminResult<T>> CreateBusiness<T>(User request, UserRole role) where T : User, new()
+        public async Task<AdminResult<T>> CreateBusiness<T>(BusinessRequest request, UserRole role) where T : User, new()
         {
             var collection = role switch
             {
@@ -35,6 +35,7 @@ namespace _3alegny.Service_layer
                 {
                     IsSuccess = false,
                     Data = existingEntity,
+                    Role = existingEntity.Role.ToString(),
                     Message = "Error: duplicate entity"
                 };
             }
@@ -58,6 +59,7 @@ namespace _3alegny.Service_layer
             {
                 IsSuccess = true,
                 Data = entity,
+                Role = entity.Role.ToString(),
                 Message = $"{typeof(T).Name} {entity.Name} created successfully"
             };
         }
@@ -135,5 +137,6 @@ public class AdminResult<T>
 {
     public bool IsSuccess { get; set; }
     public T? Data { get; set; }
+    public string? Role { get; set; }
     public string? Message { get; set; }
 }
