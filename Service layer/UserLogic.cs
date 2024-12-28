@@ -20,14 +20,14 @@ namespace _3alegny.Service_layer
             _context = context;
         }
 
-        public async Task<(bool IsSuccess, string Message)> Signup(SignupRequest request)
+        public async Task<SignUpResponse> Signup(SignupRequest request)
         {
 
             // Check if username already exists
             var existingUser = await _context.Patients.Find(Builders<Patient>.Filter.Eq(u => u.UserName, request.UserName)).FirstOrDefaultAsync();
 
             if (existingUser != null)
-                return (false, "Username already exists.");
+                return new SignUpResponse { IsSuccess = false, Message = "Username already exists." };
 
             var user = new Patient
             {
@@ -55,7 +55,14 @@ namespace _3alegny.Service_layer
 
             await _context.Patients.InsertOneAsync(user);
 
-            return (true, "Signup successful.");
+            return new SignUpResponse
+            {
+                IsSuccess = true,
+                UserName = user.UserName,
+                ID = user.Id.ToString(),
+                Role = user.Role.ToString(),
+                Message = "User login succeeded."
+            };
         }
 
         public async Task<LoginResponse> Login(UserLoginRequest request)
@@ -104,11 +111,13 @@ namespace _3alegny.Service_layer
             return result == PasswordVerificationResult.Success;
         }
 
-        public class SignUpResponse<T>
+        public class SignUpResponse
         {
             public bool IsSuccess { get; set; }
-            public T? Data { get; set; }
-            public string? Message { get; set; }
+            public string? UserName { get; set; }
+            public string? ID { get; set; }
+            public string? Role { get; set; }
+            public string Message { get; set; }
         }
         public class LoginResponse
         {
@@ -116,7 +125,7 @@ namespace _3alegny.Service_layer
             public string? UserName { get; set; }
             public string? ID { get; set; }
             public string? Role { get; set; }
-            public string? Message { get; set; }
+            public string Message { get; set; }
         }
     }
 }

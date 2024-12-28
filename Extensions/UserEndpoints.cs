@@ -13,7 +13,7 @@ public static class UserEndpoints
         app.MapPost("users/signup", (Func<SignupRequest, UserLogic, IResult>)((request, logic) =>
         {
             var result = logic.Signup(request).Result;
-            return result.IsSuccess ? Results.Ok(result.Message) : Results.BadRequest(result.Message);
+            return result.IsSuccess ? Results.Ok(result) : Results.BadRequest(result.Message);
         })).WithTags("User")
          .WithOpenApi(operation => new(operation)
          {
