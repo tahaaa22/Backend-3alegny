@@ -58,7 +58,6 @@ namespace _3alegny.Service_layer
             return (true, "Signup successful.");
         }
 
-
         public async Task<LoginResponse> Login(UserLoginRequest request)
         {
             User user = await _context.Patients.Find(u => u.UserName == request.UserName).FirstOrDefaultAsync();
@@ -91,8 +90,6 @@ namespace _3alegny.Service_layer
                 Message = "User login succeeded."
             };
         }
-
-
 
         private string HashPassword(string password)
         {
