@@ -16,21 +16,21 @@ public static class AdminEndpoints
         {
             var result = logic.GetAllUsers().Result;
             return result.IsSuccess ? Results.Ok(result.Data) : Results.NotFound(result.Message);
-        })).WithTags("admin");
+        })).WithTags("Admin");
 
         // Admin - Get a user by specific ID
         app.MapGet("/admin/user/{id}", (Func<string, AdminLogic, IResult>)((id, logic) =>
         {
             var result = logic.GetUserById(id).Result;
             return result.IsSuccess ? Results.Ok(result.Data) : Results.NotFound(result.Message);
-        })).WithTags("admin");
+        })).WithTags("Admin");
 
         // Admin - Delete a user
         app.MapDelete("/admin/user/{id}", (Func<string, AdminLogic, IResult>)((id, logic) =>
         {
             var result = logic.DeleteUser(id).Result;
             return result.IsSuccess ? Results.Ok(result.Message) : Results.NotFound(result.Message);
-        })).WithTags("admin");
+        })).WithTags("Admin");
 
         //Admin - Receives data from the frontend and creates a new business. (pharmcies / hospital)
         app.MapPost("/admin/create/Business", async ([FromBody] User request, [FromServices] AdminLogic logic) =>
@@ -48,7 +48,7 @@ public static class AdminEndpoints
 
             }
             return Results.BadRequest("admin failed to create the business");
-        }).WithTags("admin")
+        }).WithTags("Admin")
           .WithOpenApi(operation => new(operation)
           {
               Summary = "creates a new business. (pharmcies / hospital)",
@@ -57,9 +57,7 @@ public static class AdminEndpoints
           });
 
     }
-
-
-
+    
     public record BusinessRequest(
      string Name,
      string UserName,

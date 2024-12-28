@@ -86,7 +86,7 @@ public class SwaggerTagDescriptionFilter : Swashbuckle.AspNetCore.SwaggerGen.IDo
     {
         swaggerDoc.Tags = new List<Microsoft.OpenApi.Models.OpenApiTag>
         {
-            new() { Name = "admin", Description = "Operations related to the Admin" },
+            new() { Name = "Admin", Description = "Operations related to the Admin" },
             new() { Name = "User", Description = "Operations related to Authentication" },
             new() { Name = "Patient", Description = "Operations related to the Patient" },
             new() {Name= "Doctors", Description = "Operations related to the Doctors" },

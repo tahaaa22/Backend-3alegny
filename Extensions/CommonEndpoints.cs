@@ -47,5 +47,42 @@ public static class CommonEndpoints
             Description = "This endpoint returns the top-rated doctors based on their ratings.",
             OperationId = "GetTopDoctors",
         });
+        // Endpoint to get the top-rated pharmacies
+        app.MapGet("/top-pharmacies", async (CommonLogic logic) =>
+        {
+            try
+            {
+                var pharmacies = await logic.GetTopRatedPharmacies();
+                return Results.Ok(new { Success = true, Data = pharmacies });
+            }
+            catch (Exception e)
+            {
+                return Results.BadRequest(new { Success = false, Message = e.Message });
+            }
+        }).WithTags("Pharmacies").WithOpenApi(operation => new(operation)
+        {
+            Summary = "Get the top-rated pharmacies",
+            Description = "This endpoint returns the top-rated pharmacies based on their ratings.",
+            OperationId = "GetTopPharmacies",
+        });
+
+        // Endpoint to get Covered Insurance
+        app.MapGet("/hospital-insurance", async (CommonLogic logic) =>
+        {
+            try
+            {
+                var insurance = await logic.GetHospitalInsurances();
+                return Results.Ok(new { Success = true, Data = insurance });
+            }
+            catch (Exception e)
+            {
+                return Results.BadRequest(new { Success = false, Message = e.Message });
+            }
+        }).WithTags("Insurance").WithOpenApi(operation => new(operation)
+        {
+            Summary = "Get the covered insurance",
+            Description = "This endpoint returns the list of insurance companies covered by the system.",
+            OperationId = "GetCoveredInsurance",
+        });
     }
 }
