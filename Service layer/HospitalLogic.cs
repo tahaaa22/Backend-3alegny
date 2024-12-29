@@ -29,7 +29,6 @@ namespace _3alegny.Service_layer
             return "Department added successfully";
         }
 
-        // Method to add a doctor to a hospital
         public async Task<string> AddDoctor(Doctors doctor)
 
         {   // Ensure the doctor's ID is generated
@@ -57,7 +56,6 @@ namespace _3alegny.Service_layer
 
             return "Doctor added successfully";
         }
-
         public async Task<string> UpdateDoctorById(string doctorId, Doctors updatedDoctor)  //need more enhacements
         {
             // Validate if the provided doctorId is a valid ObjectId
@@ -119,8 +117,66 @@ namespace _3alegny.Service_layer
 
             // Insert the new EHR
             await _context.EHRs.InsertOneAsync(ehr);
+
+            var updateDefinition = Builders<Patient>.Update
+            .Set(e => e.EHR, ehr);  // Update specific fields
+
+
+            await _context.Patients
+                .UpdateOneAsync(e => e.Id == ObjectId.Parse(ehr.PatientId), updateDefinition);
+
             return "EHR created successfully";
         }
+
+        public async Task<EHR> GetEHRById(string ehrId)
+        {
+            // Validate if the provided ehrId is a valid ObjectId
+            if (!ObjectId.TryParse(ehrId, out _))
+                throw new Exception("Invalid EHR ID");
+
+            // Find the EHR document by ID
+            var ehr = await _context.EHRs.Find(e => e.Id == ObjectId.Parse(ehrId)).FirstOrDefaultAsync();
+            if (ehr == null)
+                throw new Exception("EHR not found");
+
+            // Ensure the patient's EHR field is set to this EHR document if it's not already
+            var patient = await _context.Patients.Find(p => p.Id == ObjectId.Parse(ehr.PatientId)).FirstOrDefaultAsync();
+            if (patient != null && patient.EHR == null)
+            {
+                var updateDefinition = Builders<Patient>.Update.Set(p => p.EHR, ehr);
+                await _context.Patients.UpdateOneAsync(p => p.Id == patient.Id, updateDefinition);
+            }
+
+            return ehr;
+        }
+
+
+        public async Task<string> UpdateEHRById(string ehrId, EHR updatedEHR)
+        {
+            // Validate if the provided ehrId is a valid ObjectId
+            if (!ObjectId.TryParse(ehrId, out _))
+                throw new Exception("Invalid EHR ID");
+
+            // Ensure the updated EHR keeps the original ID
+            updatedEHR.Id = ObjectId.Parse(ehrId);
+
+            // Replace the existing EHR document with the updated one
+            var result = await _context.EHRs.ReplaceOneAsync(e => e.Id == ObjectId.Parse(ehrId), updatedEHR);
+
+            if (result.MatchedCount == 0)
+                throw new Exception("EHR not found");
+
+            // Now, update the patient's EHR field in the Patients collection
+            var patient = await _context.Patients.Find(p => p.Id == ObjectId.Parse(updatedEHR.PatientId)).FirstOrDefaultAsync();
+            if (patient != null)
+            {
+                var updateDefinition = Builders<Patient>.Update.Set(p => p.EHR, updatedEHR);
+                await _context.Patients.UpdateOneAsync(p => p.Id == patient.Id, updateDefinition);
+            }
+
+            return "EHR updated successfully";
+        }
+
 
 
     }

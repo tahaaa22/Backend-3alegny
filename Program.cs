@@ -49,6 +49,8 @@ builder.Services.AddScoped<UserLogic>();
 builder.Services.AddScoped<AdminLogic>();
 builder.Services.AddScoped<PatientLogic>();
 builder.Services.AddScoped<CommonLogic>();
+builder.Services.AddScoped<HospitalLogic>(); 
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>

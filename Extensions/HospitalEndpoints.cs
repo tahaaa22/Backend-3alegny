@@ -9,7 +9,7 @@ public static class HospitalEndpoints
     public static void MapHospitalEndpoints(this WebApplication app)
     {
         // POST endpoint to add a new department
-        app.MapPost("/post-departments", async ([FromServices] HospitalLogic logic, string hospitalId, string departmentName) =>
+        app.MapPost("/post-departments", async ([FromBody] HospitalLogic logic, string hospitalId, string departmentName) =>
         {
             try
             {
@@ -94,7 +94,7 @@ public static class HospitalEndpoints
             OperationId = "DeleteDoctorById"
         });
 
-        app.MapPost("/post-ehr", async ([FromServices]HospitalLogic logic, [FromBody] EHR ehr) =>
+        app.MapPost("/post-ehr", async (HospitalLogic logic, [FromBody] EHR ehr) =>
         {
             try
             {
@@ -106,15 +106,60 @@ public static class HospitalEndpoints
                 return Results.BadRequest(new { Success = false, Message = e.Message });
             }
         })
-        .WithTags("EHR")
-        .WithOpenApi(operation => new(operation)
+.WithTags("EHR")
+.WithOpenApi(operation => new(operation)
+{
+    Summary = "Create a new EHR for a patient",
+    Description = "Adds a new EHR record for a patient if they don't already have one.",
+    OperationId = "CreateEHR"
+});
+
+        app.MapGet("/get-ehr/{ehrId}", async ([FromServices] HospitalLogic logic, string ehrId) =>
         {
-            Summary = "Create a new EHR for a patient",
-            Description = "Adds a new EHR record for a patient if they don't already have one.",
-            OperationId = "CreateEHR"
-        });
+            try
+            {
+                var ehr = await logic.GetEHRById(ehrId);
+                return Results.Ok(new { Success = true, Data = ehr });
+            }
+            catch (Exception e)
+            {
+                return Results.BadRequest(new { Success = false, Message = e.Message });
+            }
+        })
+.WithTags("EHR")
+.WithOpenApi(operation => new(operation)
+{
+    Summary = "Get EHR by ID",
+    Description = "Retrieves an EHR document by its ID.",
+    OperationId = "GetEHRById"
+});
+
+
+        // PUT endpoint to update an EHR by ID
+        app.MapPut("/update-ehr/{ehrId}", async ([FromServices] HospitalLogic logic, string ehrId, [FromBody] EHR updatedEHR) =>
+        {
+            try
+            {
+                var result = await logic.UpdateEHRById(ehrId, updatedEHR);
+                return Results.Ok(new { Success = true, Message = result });
+            }
+            catch (Exception e)
+            {
+                return Results.BadRequest(new { Success = false, Message = e.Message });
+            }
+        })
+ .WithTags("EHR")
+ .WithOpenApi(operation => new(operation)
+ {
+     Summary = "Update EHR by ID",
+     Description = "Updates an EHR document by its ID.",
+     OperationId = "UpdateEHRById"
+ });
+
+
 
 
 
     }
 }
+
