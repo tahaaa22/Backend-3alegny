@@ -63,6 +63,7 @@ public static class AdminEndpoints
      string UserName,
      string Role,
      string Password,
+     string imageUrl,
      ContactInfo contactInfo,
      Address Address,
      DateTime CreatedAt,

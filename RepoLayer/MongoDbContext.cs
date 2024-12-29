@@ -20,6 +20,7 @@ public class MongoDbContext : DbContext
     public IMongoCollection<PHR> PHRs => _database.GetCollection<PHR>("PHRs");
     public IMongoCollection<Order> Orders => _database.GetCollection<Order>("Orders");
     public IMongoCollection<Appointments> Appointments => _database.GetCollection<Appointments>("Appointments");
+    public IMongoCollection<Drugs> Drugs => _database.GetCollection<Drugs>("Drugs");
 
 
     public MongoDbContext(string connectionString, string databaseName)
