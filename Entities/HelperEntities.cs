@@ -67,7 +67,7 @@ namespace _3alegny.Entities
         public Address Address { get; set; }
         public string? Schedule { get; set; } // FIXME: not needed
         public string? Reviews { get; set; }
-        public float Rating { get; set; }
+        public Double Rating { get; set; }
         public int AppointmentFee { get; set; }
     }
 }
