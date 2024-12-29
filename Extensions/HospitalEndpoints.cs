@@ -9,7 +9,7 @@ public static class HospitalEndpoints
     public static void MapHospitalEndpoints(this WebApplication app)
     {
         // POST endpoint to add a new department
-        app.MapPost("/Hospital/add-department", async ([FromBody] HospitalLogic logic, string hospitalId, string departmentName) =>
+        app.MapPost("/Hospital/add-department", async ([FromServices] HospitalLogic logic, string hospitalId, string departmentName) =>
         {
             try
             {
@@ -94,7 +94,7 @@ public static class HospitalEndpoints
             OperationId = "DeleteDoctorById"
         });
 
-        app.MapPost("/Hospital/post-ehr", async (HospitalLogic logic, [FromBody] EHR ehr) =>
+        app.MapPost("/Hospital/post-ehr", async ([FromServices]  HospitalLogic logic, [FromBody] EHR ehr) =>
         {
             try
             {
