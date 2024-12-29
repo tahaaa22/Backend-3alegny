@@ -35,7 +35,7 @@ namespace _3alegny.Service_layer
         }
 
         //ADD a new drug to the pharmacy
-        public async Task<PharmacyResult<Drugs>> AddDrug(string pharmacyId, Drugs drug)
+        public async Task<DrugsResult> AddDrug(string pharmacyId, Drugs drug)
         {
             try
             {
@@ -55,27 +55,25 @@ namespace _3alegny.Service_layer
                 }
                 else
                 {
-                    drugcheck.Quantity += drug.Quantity;
-                    await _context.Drugs.ReplaceOneAsync(d => d.Id == drugcheck.Id, drugcheck);
-                    return new PharmacyResult<Drugs> { IsSuccess = true, Data = drugcheck, Message = "Drug quantity updated successfully" };
+                    return new DrugsResult { IsSuccess = false,Message = "Drug already added" };
                 }
                 var pharmacy = await _context.Pharmacies.Find(p => p.Id == ObjectId.Parse(pharmacyId)).FirstOrDefaultAsync();
                 if (pharmacy == null)
                 {
-                    return new PharmacyResult<Drugs> { IsSuccess = false, Message = "Pharmacy not found." };
+                    return new DrugsResult { IsSuccess = false, Message = "Pharmacy not found." };
                 }
                 pharmacy.Drugs.Add(newdrug);
                 await _context.Pharmacies.ReplaceOneAsync(p => p.Id == ObjectId.Parse(pharmacyId), pharmacy);
-                return new PharmacyResult<Drugs> { IsSuccess = true, Data = newdrug, Message = "Drug added successfully" };
+                return new DrugsResult { IsSuccess = true, Data = newdrug, Message = "Drug added successfully" };
             }
             catch (Exception ex)
             {
-                return new PharmacyResult<Drugs> { IsSuccess = false, Message = $"Error: {ex.Message}" };
+                return new DrugsResult { IsSuccess = false, Message = $"Error: {ex.Message}" };
             }
         }
 
         //Update Drug Quantity in the pharmacy
-        public async Task<PharmacyResult<Drugs>> UpdateDrugQuantity(string pharmacyId, string drugName, int quantityToAdd, bool flag)
+        public async Task<DrugsResult> UpdateDrugQuantity(string pharmacyId, string drugName, int quantityToAdd, bool flag)
         {
             
             try
@@ -84,7 +82,7 @@ namespace _3alegny.Service_layer
                 var drug = await _context.Drugs.Find(d => d.Name == drugName).FirstOrDefaultAsync();
                 if (drug == null)
                 {
-                    return new PharmacyResult<Drugs>
+                    return new DrugsResult
                     {
                         IsSuccess = false,
                         Message = "Drug not found in the total inventory."
@@ -98,7 +96,7 @@ namespace _3alegny.Service_layer
 
                 if (pharmacy == null)
                 {
-                    return new PharmacyResult<Drugs>
+                    return new DrugsResult
                     {
                         IsSuccess = false,
                         Message = "Pharmacy not found."
@@ -144,7 +142,7 @@ namespace _3alegny.Service_layer
                 
                 await _context.Pharmacies.ReplaceOneAsync(p => p.Id == ObjectId.Parse(pharmacyId), pharmacy);
 
-                return new PharmacyResult<Drugs>
+                return new DrugsResult
                 {
                     IsSuccess = true,
                     Data = drug,
@@ -154,7 +152,7 @@ namespace _3alegny.Service_layer
             catch (Exception ex)
             {
                 
-                return new PharmacyResult<Drugs>
+                return new DrugsResult
                 {
                     IsSuccess = false,
                     Message = $"Error: {ex.Message}"
@@ -202,6 +200,15 @@ namespace _3alegny.Service_layer
         {
             public bool IsSuccess { get; set; }
             public T? Data { get; set; }
+            public string? role { get; set; }
+            public required string Message { get; set; }
+        }
+
+        public class DrugsResult
+        {
+
+            public bool IsSuccess { get; set; }
+            public Drugs? Data { get; set; }
             public required string Message { get; set; }
         }
     }
