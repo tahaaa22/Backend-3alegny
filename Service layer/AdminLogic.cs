@@ -50,7 +50,8 @@ namespace _3alegny.Service_layer
                 Address = request.Address,
                 CreatedAt = request.CreatedAt,
                 UpdatedAt = request.UpdatedAt,
-                DeletedAt = request.CreatedAt
+                DeletedAt = request.CreatedAt,
+                ImageUrl= request.imageUrl
             };
 
             await collection.InsertOneAsync(entity);

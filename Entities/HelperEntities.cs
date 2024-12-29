@@ -69,5 +69,7 @@ namespace _3alegny.Entities
         public string? Reviews { get; set; }
         public Double Rating { get; set; }
         public int AppointmentFee { get; set; }
+
+        public string ImageUrl { get; set; } // Add image URL property
     }
 }

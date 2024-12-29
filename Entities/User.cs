@@ -35,6 +35,7 @@ namespace _3alegny.Entities
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime DeletedAt { get; set; }
+        public string ImageUrl { get; set; } // Add image URL property
     }
 
     // Subclass: Admin
@@ -72,7 +73,9 @@ namespace _3alegny.Entities
         public Double? Rating { get; set; } = 0.0;
         public List<Doctors> Doctors { get; set; } = new List<Doctors>();
         public List<Insurance> InsuranceAccepted { get; set; } = new List<Insurance>();
+       
     }
+
 
     // Subclass: Pharmacy
     // Subclass: Pharmacy
@@ -81,5 +84,6 @@ namespace _3alegny.Entities
         public List<Order> Orders { get; set; } = new List<Order>();
         public List<Drugs> Drugs { get; set; } = new List<Drugs>();
         public Double Rating { get; set; } = 0.0;
+      
     }
 }

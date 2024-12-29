@@ -27,16 +27,16 @@ public static class CommonEndpoints
         });
 
 
-        // Endpoint to get the top-rated doctors
         app.MapGet("/top-doctors", async (CommonLogic logic) =>
         {
-
             try
             {
+                // Fetch the top-rated doctors (as records)
                 var doctors = await logic.GetTopRatedDoctors();
+
+                // Return the records directly
                 return Results.Ok(new { Success = true, Data = doctors });
             }
-
             catch (Exception e)
             {
                 return Results.BadRequest(new { Success = false, Message = e.Message });
@@ -47,14 +47,17 @@ public static class CommonEndpoints
             Description = "This endpoint returns the top-rated doctors based on their ratings.",
             OperationId = "GetTopDoctors",
         });
-        
-        
-       // Endpoint to get the top-rated pharmacies
+
+
+
         app.MapGet("/top-pharmacies", async (CommonLogic logic) =>
         {
             try
             {
+                // Fetch the top-rated pharmacies (as records)
                 var pharmacies = await logic.GetTopRatedPharmacies();
+
+                // Return the records directly
                 return Results.Ok(new { Success = true, Data = pharmacies });
             }
             catch (Exception e)
@@ -67,6 +70,7 @@ public static class CommonEndpoints
             Description = "This endpoint returns the top-rated pharmacies based on their ratings.",
             OperationId = "GetTopPharmacies",
         });
+
 
         // Endpoint to get Covered Insurance
         app.MapGet("/all-insurances", async (CommonLogic logic) =>
