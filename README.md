@@ -16,6 +16,16 @@ This document outlines the API endpoints for various user roles in the system.
   Endpoint for user login.
 
 ---
+## Common EndPoints
+### GET
+- **/top-Hospitals/**  
+  Get the top 4 hospitals in the system.
+- **/top-Pharmacies/**  
+  Get the top 4 pharmacies in the system.
+- **/top-Doctors/**  
+  Get the top 4 doctors in the system.
+
+---
 
 ## Admin Endpoints
 
@@ -24,6 +34,12 @@ This document outlines the API endpoints for various user roles in the system.
   Create a business entity with three associated objects.
 
 ### GET
+- **/admin/user/id**  
+  get user by ID.
+- **/admin/allHospitals/{location}, {departments}..../**  
+  Get all hospitals by different filters
+- **/admin/allpharmacies/{location}, {departments}..../**  
+  Get all pharmacies by different filters
 - **/patient-statistics**  
   Retrieve statistics about patients.  
 - **/hospital-statistics**  
@@ -62,6 +78,8 @@ This document outlines the API endpoints for various user roles in the system.
   Add new offers for hospital departments.
 
 ### GET
+- **/Hospital/CurrentHospital/{ID}/**  
+  Get currentHospital by ID.
 - **/current-patient-ehr**  
   Retrieve the current patient's EHR using their ID.  
 - **/detailed-bill**  
