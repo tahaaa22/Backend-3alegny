@@ -29,7 +29,6 @@ namespace _3alegny.Service_layer
             return "Department added successfully";
         }
 
-        // Method to add a doctor to a hospital
         public async Task<string> AddDoctor(Doctors doctor)
 
         {   // Ensure the doctor's ID is generated
@@ -57,7 +56,6 @@ namespace _3alegny.Service_layer
 
             return "Doctor added successfully";
         }
-
         public async Task<string> UpdateDoctorById(string doctorId, Doctors updatedDoctor)  //need more enhacements
         {
             // Validate if the provided doctorId is a valid ObjectId
@@ -119,6 +117,14 @@ namespace _3alegny.Service_layer
 
             // Insert the new EHR
             await _context.EHRs.InsertOneAsync(ehr);
+
+            var updateDefinition = Builders<Patient>.Update
+            .Set(e => e.EHR, ehr);  // Update specific fields
+
+
+            await _context.Patients
+                .UpdateOneAsync(e => e.Id == ObjectId.Parse(ehr.PatientId), updateDefinition);
+
             return "EHR created successfully";
         }
 

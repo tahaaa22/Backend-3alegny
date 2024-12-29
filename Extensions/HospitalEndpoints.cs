@@ -9,7 +9,7 @@ public static class HospitalEndpoints
     public static void MapHospitalEndpoints(this WebApplication app)
     {
         // POST endpoint to add a new department
-        app.MapPost("/post-departments", async ([FromServices] HospitalLogic logic, string hospitalId, string departmentName) =>
+        app.MapPost("/post-departments", async ([FromBody] HospitalLogic logic, string hospitalId, string departmentName) =>
         {
             try
             {
@@ -94,7 +94,7 @@ public static class HospitalEndpoints
             OperationId = "DeleteDoctorById"
         });
 
-        app.MapPost("/post-ehr", async ([FromServices]HospitalLogic logic, [FromBody] EHR ehr) =>
+        app.MapPost("/post-ehr", async (HospitalLogic logic, [FromBody] EHR ehr) =>
         {
             try
             {
@@ -106,15 +106,16 @@ public static class HospitalEndpoints
                 return Results.BadRequest(new { Success = false, Message = e.Message });
             }
         })
-        .WithTags("EHR")
-        .WithOpenApi(operation => new(operation)
-        {
-            Summary = "Create a new EHR for a patient",
-            Description = "Adds a new EHR record for a patient if they don't already have one.",
-            OperationId = "CreateEHR"
-        });
+.WithTags("EHR")
+.WithOpenApi(operation => new(operation)
+{
+    Summary = "Create a new EHR for a patient",
+    Description = "Adds a new EHR record for a patient if they don't already have one.",
+    OperationId = "CreateEHR"
+});
 
 
 
     }
 }
+

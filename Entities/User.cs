@@ -55,7 +55,7 @@ namespace _3alegny.Entities
         public List<Insurance>? Insurance { get; set; }
         public float Height { get; set; }
         public float Weight { get; set; }
-        public List<EHR> EHR { get; set; } = new List<EHR>();
+        public EHR EHR { get; set; }
 
 
 
