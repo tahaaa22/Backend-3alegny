@@ -114,6 +114,50 @@ public static class HospitalEndpoints
     OperationId = "CreateEHR"
 });
 
+        app.MapGet("/get-ehr/{ehrId}", async ([FromServices] HospitalLogic logic, string ehrId) =>
+        {
+            try
+            {
+                var ehr = await logic.GetEHRById(ehrId);
+                return Results.Ok(new { Success = true, Data = ehr });
+            }
+            catch (Exception e)
+            {
+                return Results.BadRequest(new { Success = false, Message = e.Message });
+            }
+        })
+.WithTags("EHR")
+.WithOpenApi(operation => new(operation)
+{
+    Summary = "Get EHR by ID",
+    Description = "Retrieves an EHR document by its ID.",
+    OperationId = "GetEHRById"
+});
+
+
+        // PUT endpoint to update an EHR by ID
+        app.MapPut("/update-ehr/{ehrId}", async ([FromServices] HospitalLogic logic, string ehrId, [FromBody] EHR updatedEHR) =>
+        {
+            try
+            {
+                var result = await logic.UpdateEHRById(ehrId, updatedEHR);
+                return Results.Ok(new { Success = true, Message = result });
+            }
+            catch (Exception e)
+            {
+                return Results.BadRequest(new { Success = false, Message = e.Message });
+            }
+        })
+ .WithTags("EHR")
+ .WithOpenApi(operation => new(operation)
+ {
+     Summary = "Update EHR by ID",
+     Description = "Updates an EHR document by its ID.",
+     OperationId = "UpdateEHRById"
+ });
+
+
+
 
 
     }
