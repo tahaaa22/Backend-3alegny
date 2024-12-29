@@ -190,6 +190,22 @@ namespace _3alegny.Service_layer
                 return new PatientResult<List<Hospital>> { IsSuccess = false, Message = $"Error: {ex.Message}" };
             }
         }
+        public async Task<AdminResult<List<Pharmacy>>> GetAllPharmacies()
+        {
+            try
+            {
+                var pharmacy = await _context.Pharmacies.Find(_ => true).ToListAsync(); 
+                if (pharmacy == null || !pharmacy.Any())
+                {
+                    return new AdminResult<List<Pharmacy>> { IsSuccess = false, Message = "No Patients found." };
+                }
+                return new AdminResult<List<Pharmacy>> { IsSuccess = true, Data = pharmacy, Message = "all users returned" };
+            }
+            catch (Exception ex)
+            {
+                return new AdminResult<List<Pharmacy>> { IsSuccess = false, Message = $"Error: {ex.Message}" };
+            }
+        }
 
 
 
