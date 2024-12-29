@@ -3,6 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace _3alegny.Entities
 {
+    using MongoDB.Bson;
     using MongoDB.Bson.Serialization.Attributes;
 
     public enum UserRole

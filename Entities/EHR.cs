@@ -43,4 +43,3 @@ public class EHR
     // Reporting and Analytics
     public string ReportingAndAnalytics { get; set; }
 }
-

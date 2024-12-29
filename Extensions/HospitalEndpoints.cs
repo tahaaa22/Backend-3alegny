@@ -9,7 +9,7 @@ public static class HospitalEndpoints
     public static void MapHospitalEndpoints(this WebApplication app)
     {
         // POST endpoint to add a new department
-        app.MapPost("/post-departments", async ([FromBody] HospitalLogic logic, string hospitalId, string departmentName) =>
+        app.MapPost("/Hospital/post-departments", async ([FromBody] HospitalLogic logic, string hospitalId, string departmentName) =>
         {
             try
             {
@@ -21,7 +21,7 @@ public static class HospitalEndpoints
                 return Results.BadRequest(new { Success = false, Message = e.Message });
             }
         })
-        .WithTags("Departments")
+        .WithTags("Department")
         .WithOpenApi(operation => new(operation)
         {
             Summary = "Add a new department",
@@ -30,7 +30,7 @@ public static class HospitalEndpoints
         });
 
         // POST endpoint to add a new doctor
-        app.MapPost("/post-doctors", async ([FromServices] HospitalLogic logic, [FromBody] Doctors doctor) =>
+        app.MapPost("/Hospital/post-doctors", async ([FromServices] HospitalLogic logic, [FromBody] Doctors doctor) =>
         {
             try
             {
@@ -42,7 +42,7 @@ public static class HospitalEndpoints
                 return Results.BadRequest(new { Success = false, Message = e.Message });
             }
         })
-        .WithTags("Doctors")
+        .WithTags("Doctor")
         .WithOpenApi(operation => new(operation)
         {
             Summary = "Add a new doctor",
@@ -52,7 +52,7 @@ public static class HospitalEndpoints
 
 
         // PUT endpoint to retrieve and update a doctor by ID
-        app.MapPut("/upsert-doctor/{doctorId}", async ([FromServices] HospitalLogic logic, string doctorId, [FromBody] Doctors updatedDoctor) =>
+        app.MapPut("/Hospital/upsert-doctor/{doctorId}", async ([FromServices] HospitalLogic logic, string doctorId, [FromBody] Doctors updatedDoctor) =>
         {
             try
             {
@@ -64,7 +64,7 @@ public static class HospitalEndpoints
                 return Results.BadRequest(new { Success = false, Message = e.Message });
             }
         })
-        .WithTags("Doctors")
+        .WithTags("Doctor")
         .WithOpenApi(operation => new(operation)
         {
             Summary = "Get and update doctor by ID",
@@ -74,7 +74,7 @@ public static class HospitalEndpoints
 
 
         // DELETE endpoint to remove a doctor by ID
-        app.MapDelete("/delete-doctor/{doctorId}", async ([FromServices] HospitalLogic logic, string doctorId) =>
+        app.MapDelete("/Hospital/delete-doctor/{doctorId}", async ([FromServices] HospitalLogic logic, string doctorId) =>
         {
             try
             {
@@ -86,7 +86,7 @@ public static class HospitalEndpoints
                 return Results.BadRequest(new { Success = false, Message = e.Message });
             }
         })
-        .WithTags("Doctors")
+        .WithTags("Doctor")
         .WithOpenApi(operation => new(operation)
         {
             Summary = "Delete a doctor by ID",
@@ -94,7 +94,7 @@ public static class HospitalEndpoints
             OperationId = "DeleteDoctorById"
         });
 
-        app.MapPost("/post-ehr", async (HospitalLogic logic, [FromBody] EHR ehr) =>
+        app.MapPost("/Hospital/post-ehr", async (HospitalLogic logic, [FromBody] EHR ehr) =>
         {
             try
             {
@@ -106,13 +106,13 @@ public static class HospitalEndpoints
                 return Results.BadRequest(new { Success = false, Message = e.Message });
             }
         })
-.WithTags("EHR")
-.WithOpenApi(operation => new(operation)
-{
-    Summary = "Create a new EHR for a patient",
-    Description = "Adds a new EHR record for a patient if they don't already have one.",
-    OperationId = "CreateEHR"
-});
+        .WithTags("EHR")
+        .WithOpenApi(operation => new(operation)
+        {
+            Summary = "Create a new EHR for a patient",
+            Description = "Adds a new EHR record for a patient if they don't already have one.",
+            OperationId = "CreateEHR"
+        });
 
         app.MapGet("/get-ehr/{ehrId}", async ([FromServices] HospitalLogic logic, string ehrId) =>
         {
@@ -126,15 +126,13 @@ public static class HospitalEndpoints
                 return Results.BadRequest(new { Success = false, Message = e.Message });
             }
         })
-.WithTags("EHR")
-.WithOpenApi(operation => new(operation)
-{
-    Summary = "Get EHR by ID",
-    Description = "Retrieves an EHR document by its ID.",
-    OperationId = "GetEHRById"
-});
-
-
+            .WithTags("EHR")
+            .WithOpenApi(operation => new(operation)
+            {
+                Summary = "Get EHR by ID",
+                Description = "Retrieves an EHR document by its ID.",
+                OperationId = "GetEHRById"
+            });
         // PUT endpoint to update an EHR by ID
         app.MapPut("/update-ehr/{ehrId}", async ([FromServices] HospitalLogic logic, string ehrId, [FromBody] EHR updatedEHR) =>
         {
@@ -148,15 +146,28 @@ public static class HospitalEndpoints
                 return Results.BadRequest(new { Success = false, Message = e.Message });
             }
         })
- .WithTags("EHR")
- .WithOpenApi(operation => new(operation)
- {
-     Summary = "Update EHR by ID",
-     Description = "Updates an EHR document by its ID.",
-     OperationId = "UpdateEHRById"
- });
+             .WithTags("EHR")
+             .WithOpenApi(operation => new(operation)
+             {
+                 Summary = "Update EHR by ID",
+                 Description = "Updates an EHR document by its ID.",
+                 OperationId = "UpdateEHRById"
+             });
 
 
+
+        app.MapGet("/Hospital/CurrentHospital/{id}", async ([FromServices] HospitalLogic logic, string id) =>
+        {
+            var result = await logic.GetHospitalById(id);
+            return result.IsSuccess ? Results.Ok(result.Data) : Results.NotFound(result.Message);
+        }).WithTags("Hospital")
+          .WithOpenApi(operation => new(operation)
+          {
+              Summary = "Get hospital with ID",
+              Description = "this endpoint allow to get the hospital details using ID",
+              OperationId = "GETHospital",
+          }
+          );
 
 
 

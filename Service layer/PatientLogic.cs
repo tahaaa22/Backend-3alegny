@@ -15,6 +15,24 @@ namespace _3alegny.Service_layer
             _context = context;
         }
 
+        public async Task<PatientResult> GetPatientById(string id)
+        {
+            try
+            {
+                var objectId = new ObjectId(id); // Convert string ID to MongoDB ObjectId
+                var user = await _context.Patients.Find(u => u.Id == objectId).FirstOrDefaultAsync();
+                if (user == null)
+                {
+                    return new PatientResult { IsSuccess = false, Message = "patient not found." };
+                }
+                return new PatientResult { IsSuccess = true, Data = user, Message = $"patient with {id} valid" };
+            }
+            catch (Exception ex)
+            {
+                return new PatientResult { IsSuccess = false, Message = $"Error: {ex.Message}" };
+            }
+        }
+
         public async Task<patientPHR<string>> PostPHR(phrRequest phr)
         {
             try
@@ -96,8 +114,16 @@ namespace _3alegny.Service_layer
         }
     }
 }
+public class PatientResult
+{
+    public bool IsSuccess { get; set; }
+    public Patient? Data { get; set; }
+    public string? Role { get; set; }
+    public required string Message { get; set; }
+}
 
-public class patientPHR<T>
+//FIXME: why do you need template class inside Patient service?
+public class patientPHR<T> 
 {
     public bool IsSuccess { get; set; }
     public string? Message { get; set; }

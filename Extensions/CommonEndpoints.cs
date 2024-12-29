@@ -19,7 +19,7 @@ public static class CommonEndpoints
             {
                 return Results.BadRequest(new { Success = false, Message = e.Message });
             }
-        }).WithTags("Hospitals").WithOpenApi(operation => new(operation)
+        }).WithTags("Hospital").WithOpenApi(operation => new(operation)
         {
             Summary = "Get the top-rated hospitals",
             Description = "This endpoint returns the top-rated hospitals based on their ratings.",
@@ -41,13 +41,15 @@ public static class CommonEndpoints
             {
                 return Results.BadRequest(new { Success = false, Message = e.Message });
             }
-        }).WithTags("Doctors").WithTags("Doctors").WithOpenApi(operation => new(operation)
+        }).WithTags("Doctor").WithOpenApi(operation => new(operation)
         {
             Summary = "Get the top-rated doctors",
             Description = "This endpoint returns the top-rated doctors based on their ratings.",
             OperationId = "GetTopDoctors",
         });
-        // Endpoint to get the top-rated pharmacies
+        
+        
+       // Endpoint to get the top-rated pharmacies
         app.MapGet("/top-pharmacies", async (CommonLogic logic) =>
         {
             try
@@ -59,7 +61,7 @@ public static class CommonEndpoints
             {
                 return Results.BadRequest(new { Success = false, Message = e.Message });
             }
-        }).WithTags("Pharmacies").WithOpenApi(operation => new(operation)
+        }).WithTags("Pharmacy").WithOpenApi(operation => new(operation)
         {
             Summary = "Get the top-rated pharmacies",
             Description = "This endpoint returns the top-rated pharmacies based on their ratings.",

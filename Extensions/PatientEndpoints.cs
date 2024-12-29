@@ -38,12 +38,27 @@ public static class PatientEndpoints
         {
             var result = logic.GetPHR(id).Result;
             return Results.Ok(result);
-        })).WithTags("Patient")
+        }))
+        .WithTags("Patient")
         .WithOpenApi(operation => new(operation)
         {
             Summary = "Get PHR",
             Description = "This endpoint allows patients to get their PHR.",
             OperationId = "GetPHR",
+        }
+        );
+
+        // Get a patient by specific ID
+        app.MapGet("/patients/CurrentPatient/{id}", (Func<string,PatientLogic, IResult>)((id, logic) =>
+        {
+            var result = logic.GetPatientById(id).Result;
+            return result.IsSuccess ? Results.Ok(result.Data) : Results.NotFound(result.Message);
+        })).WithTags("Patient")
+        .WithOpenApi(operation => new(operation)
+        {
+            Summary = "Get patient with ID",
+            Description = "this endpoint allow to get the patient details using ID",
+            OperationId = "GETPatient",
         }
         );
     }
