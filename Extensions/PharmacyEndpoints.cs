@@ -8,7 +8,7 @@ public static class PharmacyEndpoints
     public static void MapPharmacyEndpoints(this WebApplication app)
     {
 
-        app.MapGet("/Pharmacy/CurrentPharmacy/{id}", async ([FromServices] PharmacyLogic logic, string id) =>
+        app.MapGet("/Pharmacy/{id}", async ([FromServices] PharmacyLogic logic, string id) =>
         {
             var result = await logic.GetPharmacyById(id);
             return result.IsSuccess ? Results.Ok(result.Data) : Results.NotFound(result.Message);

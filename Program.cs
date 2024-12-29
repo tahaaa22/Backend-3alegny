@@ -45,7 +45,7 @@ builder.Services.AddCors();
 builder.WebHost.CaptureStartupErrors(true)
                .UseSetting("detailedErrors", "true");
 
-builder.Services.AddScoped<UserLogic>();
+builder.Services.AddScoped<AuthLogic>();
 builder.Services.AddScoped<AdminLogic>();
 builder.Services.AddScoped<PatientLogic>();
 builder.Services.AddScoped<PharmacyLogic>();
@@ -66,7 +66,7 @@ var app = builder.Build();
 
 app.UseCors("AllowAll");
 
-app.MapUserEndpoints();
+app.MapAuthEndpoints();
 app.MapAdminEndpoints();
 app.MapPatientEndpoints();
 app.MapCommonEndpoints();
@@ -90,14 +90,12 @@ public class SwaggerTagDescriptionFilter : Swashbuckle.AspNetCore.SwaggerGen.IDo
     {
         swaggerDoc.Tags = new List<Microsoft.OpenApi.Models.OpenApiTag>
         {
+            new() { Name = "Auth", Description = "Operations related to Authentication" },
+            new() { Name = "Common", Description = "Operations related to the Common" },
             new() { Name = "Admin", Description = "Operations related to the Admin" },
-            new() { Name = "User", Description = "Operations related to Authentication" },
             new() { Name = "Patient", Description = "Operations related to the Patient" },
-            new() {Name= "Doctor", Description = "Operations related to the Doctors" },
-            new() {Name= "Hospital", Description = "Operations related to the Hospitals" },
-            new() {Name= "Pharmacy", Description = "Operations related to the Pharmacies" },
-            new() {Name = "Insurance", Description = "Insurance related operations"},
-            new() {Name= "Department", Description = "Operations related to the departments"}
+            new() {Name= "Hospital", Description = "Operations related to the Hospital" },
+            new() {Name= "Pharmacy", Description = "Operations related to the Pharmacy" },
         };
     }
 }

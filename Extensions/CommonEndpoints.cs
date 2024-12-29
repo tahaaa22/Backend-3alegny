@@ -19,7 +19,7 @@ public static class CommonEndpoints
             {
                 return Results.BadRequest(new { Success = false, Message = e.Message });
             }
-        }).WithTags("Hospital").WithOpenApi(operation => new(operation)
+        }).WithTags("Common").WithOpenApi(operation => new(operation)
         {
             Summary = "Get the top-rated hospitals",
             Description = "This endpoint returns the top-rated hospitals based on their ratings.",
@@ -41,7 +41,7 @@ public static class CommonEndpoints
             {
                 return Results.BadRequest(new { Success = false, Message = e.Message });
             }
-        }).WithTags("Doctor").WithOpenApi(operation => new(operation)
+        }).WithTags("Common").WithOpenApi(operation => new(operation)
         {
             Summary = "Get the top-rated doctors",
             Description = "This endpoint returns the top-rated doctors based on their ratings.",
@@ -61,7 +61,7 @@ public static class CommonEndpoints
             {
                 return Results.BadRequest(new { Success = false, Message = e.Message });
             }
-        }).WithTags("Pharmacy").WithOpenApi(operation => new(operation)
+        }).WithTags("Common").WithOpenApi(operation => new(operation)
         {
             Summary = "Get the top-rated pharmacies",
             Description = "This endpoint returns the top-rated pharmacies based on their ratings.",
@@ -69,7 +69,7 @@ public static class CommonEndpoints
         });
 
         // Endpoint to get Covered Insurance
-        app.MapGet("/hospital-insurance", async (CommonLogic logic) =>
+        app.MapGet("/all-insurances", async (CommonLogic logic) =>
         {
             try
             {
@@ -80,9 +80,9 @@ public static class CommonEndpoints
             {
                 return Results.BadRequest(new { Success = false, Message = e.Message });
             }
-        }).WithTags("Insurance").WithOpenApi(operation => new(operation)
+        }).WithTags("Common").WithOpenApi(operation => new(operation)
         {
-            Summary = "Get the covered insurance",
+            Summary = "Get the covered insurances",
             Description = "This endpoint returns the list of insurance companies covered by the system.",
             OperationId = "GetCoveredInsurance",
         });

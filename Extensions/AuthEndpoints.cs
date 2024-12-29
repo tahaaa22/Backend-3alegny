@@ -5,16 +5,16 @@ using _3alegny.RepoLayer;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
-public static class UserEndpoints
+public static class AuthEndpoints
 {
-    public static void MapUserEndpoints(this WebApplication app)
+    public static void MapAuthEndpoints(this WebApplication app)
     {
 
-        app.MapPost("users/signup", (Func<SignupRequest, UserLogic, IResult>)((request, logic) =>
+        app.MapPost("/signup/", (Func<SignupRequest, AuthLogic, IResult>)((request, logic) =>
         {
             var result = logic.Signup(request).Result;
             return result.IsSuccess ? Results.Ok(result) : Results.BadRequest(result.Message);
-        })).WithTags("User")
+        })).WithTags("Auth")
          .WithOpenApi(operation => new(operation)
          {
              Summary = "Sign up a new user",
@@ -22,11 +22,11 @@ public static class UserEndpoints
              OperationId = "UserSignup",
          });
 
-        app.MapPost("users/login", (Func<LoginRequest, UserLogic, IResult>)((request, logic) =>
+        app.MapPost("/login/", (Func<LoginRequest, AuthLogic, IResult>)((request, logic) =>
         {
             var result = logic.Login(request).Result;
             return result.IsSuccess ? Results.Ok(result) : Results.BadRequest(result.Message);
-        })).WithTags("User")
+        })).WithTags("Auth")
             .WithOpenApi(operation => new(operation)
             {
                 Summary = "Login for all user types (hospital, pharmacy, patient)",

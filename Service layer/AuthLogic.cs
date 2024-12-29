@@ -2,20 +2,20 @@
 using _3alegny.RepoLayer;
 using Microsoft.AspNetCore.Identity;
 using MongoDB.Driver;
-using static UserEndpoints;
+using static AuthEndpoints;
 using MongoDB.Bson;
-using UserLoginRequest = UserEndpoints.LoginRequest;
+using UserLoginRequest = AuthEndpoints.LoginRequest;
 using System.Reflection;
 
 
 
 namespace _3alegny.Service_layer
 {
-    public class UserLogic
+    public class AuthLogic
     {
         private readonly MongoDbContext _context;
 
-        public UserLogic(MongoDbContext context)
+        public AuthLogic(MongoDbContext context)
         {
             _context = context;
         }
