@@ -6,6 +6,7 @@ using static PatientEndpoints;
 using System.CodeDom.Compiler;
 using static _3alegny.Service_layer.HospitalLogic;
 using System.Numerics;
+using System.Reflection.PortableExecutable;
 
 namespace _3alegny.Service_layer
 {
@@ -110,7 +111,7 @@ namespace _3alegny.Service_layer
 
 
         //get the top doctor in the current department
-        public async Task<Doctors> GetTopDoctor(string departmentId, string hospitalId)
+        public async Task<TopdoctorResponse> GetTopDoctor(string departmentId, string hospitalId)
         {
             try
             {
@@ -131,20 +132,34 @@ namespace _3alegny.Service_layer
                 var department = hospital.Departments.FirstOrDefault(d => d.Id == departmentObjectId);
                 if (department == null)
                 {
-                    return null; // No matching department found
+                   throw new Exception("No matching department found"); ; // No matching department found
                 }
 
                 // Find top doctor in the department
                 var topDoctor = hospital.Doctors
                     .Where(d => d.Specialty == department.Name) // Match specialty to department name
                     .OrderByDescending(d => d.Rating)           // Assuming "Rating" is a property of Doctor
-                    .FirstOrDefault();
+                .FirstOrDefault();
 
-                return topDoctor; // Return the top doctor or null if none found
+                return new TopdoctorResponse
+                {
+                    doctorId = topDoctor.Id.ToString(),
+                    Name = topDoctor.Name,
+                    Specialty = topDoctor.Specialty,
+                    HospitalId = topDoctor.HospitalId.ToString(),
+                    License = topDoctor.License,
+                    Description = topDoctor.Description,
+                    address = topDoctor.address,
+                    Reviews = topDoctor.Reviews,
+                    Rating = topDoctor.Rating,
+                    AppointmentFee = topDoctor.AppointmentFee,
+                    ImageUrl = topDoctor.ImageUrl,
+                    AvailableSlots = topDoctor.AvailableSlots,
+                    RegisteredSlots = topDoctor.RegisteredSlots
+                };
             }
             catch (Exception ex)
             {
-                // Log or handle the exception
                 throw new Exception($"Error occurred while retrieving the top doctor: {ex.Message}");
             }
         }
@@ -437,8 +452,27 @@ namespace _3alegny.Service_layer
 
     }
 }
-public class PatientResult<T>
+
+
+public class TopdoctorResponse
 {
+    public string doctorId { get; set; }
+    public string Name { get; set; }
+    public string Specialty { get; set; }
+    public string HospitalId { get; set; }
+    public string? License { get; set; }
+    public string? Description { get; set; }
+    public Address address { get; set; }
+    public string? Reviews { get; set; }  
+    public Double Rating { get; set; } 
+    public int AppointmentFee { get; set; }
+    public string ImageUrl { get; set; } // Add image URL property 
+    public List<DateTime> AvailableSlots { get; set; } = new List<DateTime>();
+    public List<DateTime> RegisteredSlots { get; set; } = new List<DateTime>(); //neglect it in add doctor response 
+}
+
+   public class  PatientResult<T>
+{ 
     public bool IsSuccess { get; set; }
     public T? Data { get; set; }
     public string? Role { get; set; }

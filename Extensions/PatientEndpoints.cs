@@ -140,6 +140,8 @@ public static class PatientEndpoints
     }
 
 
+
+
     public record HospitalFiltrationRequest <T>
     (
         string PatientId = "",
