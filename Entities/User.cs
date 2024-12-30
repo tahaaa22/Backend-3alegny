@@ -55,8 +55,7 @@ namespace _3alegny.Entities
         public DateTime DateOfBirth { get; set; }
         public string Gender { get; set; }
         public List<Insurance>? Insurance { get; set; }
-        public float Height { get; set; }
-        public float Weight { get; set; }
+       
         public EHR EHR { get; set; }
         public PHR PHR { get; set; }
 

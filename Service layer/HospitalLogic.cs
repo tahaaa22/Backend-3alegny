@@ -311,7 +311,7 @@ namespace _3alegny.Service_layer
 
         //public async Task<object> UpdateDepartmentlById(string hospitalId, UpdateDoctorRequest updatedHospital)
         //{
-         
+
         //}
 
 
@@ -347,6 +347,9 @@ namespace _3alegny.Service_layer
         //        UpdatedHospital = hospital
         //    };
         //}
+
+
+       
 
 
 
