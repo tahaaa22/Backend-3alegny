@@ -85,7 +85,7 @@ namespace _3alegny.Service_layer
                     PrescriptionHistory = phr.PrescriptionHistory,
                     Weight = new List<int> { phr.Weight },
                     Height = new List<int> { phr.Height },
-                    BMI = new List<int>{phr.BMI}
+                    BMI = new List<int> { phr.BMI }
                 };
 
                 await _context.PHRs.InsertOneAsync(PHR);
@@ -149,7 +149,7 @@ namespace _3alegny.Service_layer
                 }
 
                 return new patientPHR<PHR> { IsSuccess = true, Data = existingPHR, Message = "PHR and Patient updated successfully" };
-               
+
             }
             catch (Exception ex)
             {
@@ -163,7 +163,7 @@ namespace _3alegny.Service_layer
             {
                 // Find the patient by PatientId
                 var patient = await _context.Patients.Find(p => p.Id == ObjectId.Parse(patientId)).FirstOrDefaultAsync();
-                if (patient == null)    
+                if (patient == null)
                 {
                     return new patientPHR<PHR> { IsSuccess = false, Message = "Patient not found." };
                 }
@@ -198,83 +198,67 @@ namespace _3alegny.Service_layer
                 return new AdminResult<List<Pharmacy>> { IsSuccess = false, Message = $"Error: {ex.Message}" };
             }
         }
+
+
+        public async Task<PatientResult<List<Hospital>>> FilterByLocation(List<Hospital> hospitals)
+        {
+            try
+            {
+                return new PatientResult<List<Hospital>>
+                {
+                    IsSuccess = false,
+                    Message = $"Error: { "testing"}"
+                };
+
+            }
+            catch (Exception ex)
+            {
+                return new PatientResult<List<Hospital>>
+                {
+                    IsSuccess = false,
+                    Message = $"Error: {ex.Message}"
+                };
+
+            }
+
+        }
+
         public async Task<PatientResult<List<Hospital>>> GetAvailableHospitals(HospitalFiltrationRequest<Hospital> FilteredHospital)
         {
             try
             {
-                // Start with the hospital collection query
-                var query = _context.Hospitals.AsQueryable();
-
-                // Filter by street (default to a specific value if empty)
-                if (string.IsNullOrEmpty(FilteredHospital.street))
+                var hospital = await _context.Hospitals.Find(_ => true).ToListAsync(); // Get all Patients
+                if (hospital == null || !hospital.Any())
                 {
-                    query = query.Where(h => h.Address.Street == "DefaultStreet");
+                    return new PatientResult<List<Hospital>> { IsSuccess = false, Message = "No Hospital found." };
                 }
-                else
+                var filterdByLocation = hospital.FindAll(h => h.Address.City == FilteredHospital.street);
+                if (filterdByLocation == null || !filterdByLocation.Any())
                 {
-                    query = query.Where(h => h.Address.Street == FilteredHospital.street);
+                    return new PatientResult<List<Hospital>> { IsSuccess = false, Message = "No Hospital found." };
                 }
-
-                // Filter by price (if provided)
-                if (!string.IsNullOrEmpty(FilteredHospital.price))
+                if(FilteredHospital.price == "string" && FilteredHospital.department == "string" && FilteredHospital.rating == "string")
                 {
-                    if (double.TryParse(FilteredHospital.price, out double price))
-                    {
-                        query = query.Where(h => h.Doctors.Any(d => d.AppointmentFee <= price));
-                    }
-                    else
-                    {
-                        return new PatientResult<List<Hospital>>
-                        {
-                            IsSuccess = false,
-                            Message = "Invalid price value."
-                        };
-                    }
+                    return new PatientResult<List<Hospital>> { IsSuccess = true, Data = filterdByLocation, Message = "all users returned" };
                 }
+                var filterdByprice = hospital.FindAll(h => h.Address.City == FilteredHospital.street);
 
-                // Filter by department (if provided)
-                if (!string.IsNullOrEmpty(FilteredHospital.department))
-                {
-                    query = query.Where(h => h.Departments.Any(d => d.Name == FilteredHospital.department));
-                }
+                return new PatientResult<List<Hospital>> { IsSuccess = true, Data = filterdByLocation, Message = "all users returned" };
 
-                // Filter by rating (if provided)
-                if (!string.IsNullOrEmpty(FilteredHospital.rating))
-                {
-                    if (double.TryParse(FilteredHospital.rating, out double rating))
-                    {
-                        query = query.Where(h => h.Rating >= rating);
-                    }
-                    else
-                    {
-                        return new PatientResult<List<Hospital>>
-                        {
-                            IsSuccess = false,
-                            Message = "Invalid rating value."
-                        };
-                    }
-                }
 
-                // Execute the query and get the result list
-                var hospitals = await _context.Hospitals.Find(h => h.Equals(query)).ToListAsync();
-
-                if (!hospitals.Any())
-                {
-                    return new PatientResult<List<Hospital>> { IsSuccess = false, Message = "No hospitals found with the given filters." };
-                }
-
-                return new PatientResult<List<Hospital>>
-                {
-                    IsSuccess = true,
-                    Data = hospitals,
-                    Message = $"Hospitals filtered for patient {FilteredHospital.PatientId}."
-                };
+                return new PatientResult<List<Hospital>> { Message = "true" };
             }
             catch (Exception ex)
             {
-                return new PatientResult<List<Hospital>> { IsSuccess = false, Message = $"Error: {ex.Message}" };
+                return new PatientResult<List<Hospital>>
+                {
+                    IsSuccess = false,
+                    Message = $"Error: {ex.Message}"
+                };
             }
         }
+
+
 
     }
 }

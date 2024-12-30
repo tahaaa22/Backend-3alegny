@@ -307,37 +307,46 @@ namespace _3alegny.Service_layer
             }
         }
 
-        public async Task<object> UpdateHospitalById(string hospitalId, Hospital updatedHospital)
-        {
-            // Validate hospital ID
-            if (!ObjectId.TryParse(hospitalId, out _))
-                throw new Exception("Invalid hospital ID");
 
-            // Fetch the hospital by ID
-            var hospital = await _context.Hospitals.Find(h => h.Id.ToString() == hospitalId).FirstOrDefaultAsync();
-            if (hospital == null)
-                throw new Exception("Hospital not found");
 
-            // Update hospital fields
-            hospital.Name = updatedHospital.Name ?? hospital.Name;
-            hospital.Address = updatedHospital.Address ?? hospital.Address;
-            hospital.Departments = updatedHospital.Departments ?? hospital.Departments;
-            hospital.EHRs = updatedHospital.EHRs ?? hospital.EHRs;
-            hospital.Appointments = updatedHospital.Appointments ?? hospital.Appointments;
-            hospital.Doctors = updatedHospital.Doctors ?? hospital.Doctors;
-            hospital.Rating = updatedHospital.Rating ?? hospital.Rating;
-            hospital.InsuranceAccepted = updatedHospital.InsuranceAccepted ?? hospital.InsuranceAccepted;
+        //public async Task<object> UpdateDepartmentlById(string hospitalId, UpdateDoctorRequest updatedHospital)
+        //{
+         
+        //}
 
-            // Save the updated hospital back to the database
-            await _context.Hospitals.ReplaceOneAsync(h => h.Id == hospital.Id, hospital);
 
-            return new
-            {
-                Success = true,
-                Message = "Hospital updated successfully",
-                UpdatedHospital = hospital
-            };
-        }
+
+        //public async Task<object> UpdateHospitalById(string hospitalId, UpdateDoctorRequest updatedHospital)
+        //{
+        //    // Validate hospital ID
+        //    if (!ObjectId.TryParse(hospitalId, out _))
+        //        throw new Exception("Invalid hospital ID");
+
+        //    // Fetch the hospital by ID
+        //    var hospital = await _context.Hospitals.Find(h => h.Id.ToString() == hospitalId).FirstOrDefaultAsync();
+        //    if (hospital == null)
+        //        throw new Exception("Hospital not found");
+
+        //    // Update hospital fields
+        //    hospital.Name = updatedHospital.Name ?? hospital.Name;
+        //    hospital.Address.City = updatedHospital.City ?? hospital.Address.City;
+        //    hospital.Departments = updatedHospital. ?? hospital.Departments;
+        //    hospital.EHRs = updatedHospital.EHRs ?? hospital.EHRs;
+        //    hospital.Appointments = updatedHospital.Appointments ?? hospital.Appointments;
+        //    hospital.Doctors = updatedHospital.Doctors ?? hospital.Doctors;
+        //    hospital.Rating = updatedHospital.Rating ?? hospital.Rating;
+        //    hospital.InsuranceAccepted = updatedHospital.InsuranceAccepted ?? hospital.InsuranceAccepted;
+
+        //    // Save the updated hospital back to the database
+        //    await _context.Hospitals.ReplaceOneAsync(h => h.Id == hospital.Id, hospital);
+
+        //    return new
+        //    {
+        //        Success = true,
+        //        Message = "Hospital updated successfully",
+        //        UpdatedHospital = hospital
+        //    };
+        //}
 
 
 
