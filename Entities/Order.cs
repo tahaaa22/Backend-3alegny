@@ -6,7 +6,7 @@ namespace _3alegny.Entities
 {
     public class Order
     {
-        public ObjectId OrderId { get; set; }
+        public ObjectId Id { get; set; }
         public string PatientId { get; set; }
         public string PharmacyId { get; set; }
         public List<Drugs> Drugs { get; set; } = new List<Drugs>();
