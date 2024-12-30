@@ -48,7 +48,7 @@ public class EHR
     public List<string>? Allergies { get; set; } = new();
     public List<string>? LabResults { get; set; } = new();
     public List<string>? Immunizations { get; set; } = new();
-    /*public Dictionary<string, string> VitalSigns { get; set; } = new()*/
+    
    
     // Medical Imaging
     public List<string>? ImagingLinks { get; set; } = new();

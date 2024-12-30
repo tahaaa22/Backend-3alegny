@@ -388,6 +388,9 @@ namespace _3alegny.Service_layer
         //}
 
 
+       
+
+
 
         public class HospitalResult
         {
