@@ -16,13 +16,13 @@ namespace _3alegny.Service_layer
         }
 
         // Method to add a department to a hospital
-        public async Task<string> AddDepartment(string hospitalId, string departmentName)
+        public async Task<string> AddDepartment(string hospitalId, string departmentName, int AppointmentFee)
         {   //Check if the hospital exists
             var hospital = await _context.Hospitals.Find(h => h.Id.ToString() == hospitalId).FirstOrDefaultAsync();
             if (hospital == null)
                 throw new Exception("Hospital not found");
 
-            var newDepartment = new Department { Name = departmentName };
+            var newDepartment = new Department { Name = departmentName, AppointmentFee = AppointmentFee };
             hospital.Departments.Add(newDepartment);
 
             await _context.Hospitals.ReplaceOneAsync(h => h.Id == hospital.Id, hospital);

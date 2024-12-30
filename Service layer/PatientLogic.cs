@@ -245,12 +245,6 @@ namespace _3alegny.Service_layer
 
         }
 
-        public string? address { get; set; }
-        public string? rating { get; set; }
-        public string? department { get; set; }
-        public string? price { get; set; }
-        public string? Role { get; set; }
-        public required string Message { get; set; }
 
         public async Task<PatientResult<List<Hospital>>> GetAvailableHospitals(HospitalFiltrationRequest<Hospital> FilteredHospital)
         {
@@ -295,23 +289,20 @@ namespace _3alegny.Service_layer
                     hospitals = hospitals.FindAll(h => h.Departments.Any(d => d.Name == FilteredHospital.department));
                 }
 
-                if (!string.IsNullOrEmpty(FilteredHospital.price) && FilteredHospital.price != "string")
-                {
-                    if (int.TryParse(FilteredHospital.price, out int maxPrice))
-                    {
-                        hospitals = hospitals.FindAll(h =>
+                if (FilteredHospital.price != 0)
+                { 
+                        var finalFilteredHospitals = hospitals.FindAll(h =>
                             h.Departments.Any(d =>
                                 d.AvaliableDoctors != null &&
-                                d.AvaliableDoctors.Any(doc => doc.AppointmentFee <= maxPrice)));
-                    }
-                    else
+                                d.AppointmentFee <= FilteredHospital.price));
+
+                  if(finalFilteredHospitals == null || !finalFilteredHospitals.Any())
+                    return new PatientResult<List<Hospital>>
                     {
-                        return new PatientResult<List<Hospital>>
-                        {
-                            IsSuccess = false,
-                            Message = "Invalid price value."
-                        };
-                    }
+                        IsSuccess = false,
+                        Message = "Invalid price value."
+                    };
+                
                 }
 
                 // Final check for results

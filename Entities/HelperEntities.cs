@@ -6,6 +6,8 @@ namespace _3alegny.Entities
     {
         public ObjectId Id { get; set; }
         public string Name { get; set; }
+
+        public int AppointmentFee { get; set; } = 0;
         public List<Doctors> AvaliableDoctors { get; set; } = new List<Doctors>();
     }
 
