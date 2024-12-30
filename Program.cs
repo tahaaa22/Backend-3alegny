@@ -50,7 +50,8 @@ builder.Services.AddScoped<AdminLogic>();
 builder.Services.AddScoped<PatientLogic>();
 builder.Services.AddScoped<PharmacyLogic>();
 builder.Services.AddScoped<CommonLogic>();
-builder.Services.AddScoped<HospitalLogic>(); 
+builder.Services.AddScoped<HospitalLogic>();
+builder.Services.AddScoped<AppointmentLogic>();
 
 builder.Services.AddCors(options =>
 {
@@ -72,6 +73,7 @@ app.MapPatientEndpoints();
 app.MapCommonEndpoints();
 app.MapHospitalEndpoints();
 app.MapPharmacyEndpoints();
+app.MapAppointmentEndpoints();
 
 app.UseSwagger();
 app.UseSwaggerUI(options=>

@@ -9,7 +9,7 @@ public static class PatientEndpoints
     {
         app.MapPost("/patient/newphr/{patientid}", (Func<string,phrRequest, PatientLogic, IResult>)((pid,request, logic) =>
         {
-            var result = logic.PostPHR(pid,request).Result;
+            var result = logic.PostPHR(pid,request).Result; 
             return result.IsSuccess ? Results.Ok(result.Message) : Results.BadRequest(result.Message);
         })).WithTags("Patient")
         .WithOpenApi(operation => new(operation)
@@ -59,8 +59,21 @@ public static class PatientEndpoints
             Summary = "Get patient with ID",
             Description = "this endpoint allow to get the patient details using ID",
             OperationId = "GETPatient",
-        }
-        );
+        });
+
+        //UPDATE Patient Profile
+        app.MapPut("/patient/update/{id}", (Func<string, PatientUpdateRequest, PatientLogic, IResult>)((id, request, logic) =>
+        {
+            var result = logic.UpdatePatient(id, request).Result;
+            return result.IsSuccess ? Results.Ok(result.Message) : Results.BadRequest(result.Message);
+        })).WithTags("Patient")
+        .WithOpenApi(operation => new(operation)
+        {
+            Summary = "Update Patient Profile",
+            Description = "This endpoint allows patients to update their profile.",
+            OperationId = "UpdatePatient",
+        });
+
         // select all avaliable hospitals depends on the filters
         app.MapPost("/patient/hospitals", async ([FromBody] HospitalFiltrationRequest<Hospital> request, [FromServices] PatientLogic logic) =>
         {
@@ -104,6 +117,21 @@ public static class PatientEndpoints
         int Weight,
         int Height,
         int BMI
+    );
+
+    public record PatientUpdateRequest
+    (
+        string UserName,
+        string Password,
+        string imageUrl,
+        string Phone,
+        string Email,
+        string Street,
+        string City,
+        string State,
+        string ZipCode
+
+
     );
 
 }

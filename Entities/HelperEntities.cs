@@ -47,6 +47,16 @@ namespace _3alegny.Entities
         public string ZipCode { get; set; }
     }
 
+    //Helper Class: FollowUp
+    public class FollowUp
+    {
+        public ObjectId Id { get; set; }
+        public string PatientId { get; set; }
+        public string DoctorId { get; set; }
+        public string Date { get; set; }
+        public string Notes { get; set; }
+    }
+
     // Helper Class: ContactInfo
     public class ContactInfo
     {
@@ -63,17 +73,12 @@ namespace _3alegny.Entities
         public string HospitalId { get; set; } 
         public string? License { get; set; }
         public string? Hospital { get; set; } //neglect in add doctor respose  and in update  response
-        public string? Description { get; set; }
-        
+        public string? Description { get; set; }        
         public Address address { get; set; }
-
-
         public string? Reviews { get; set; } //neglect in add doctor response 
         public Double Rating { get; set; } //neglect in response in add doctor response
         public int AppointmentFee { get; set; }
-
         public string ImageUrl { get; set; } // Add image URL property 
-
         public List<DateTime> AvailableSlots { get; set; } = new List<DateTime>(); 
         public List<DateTime> RegisteredSlots { get; set; } = new List<DateTime>(); //neglect it in add doctor response 
     }

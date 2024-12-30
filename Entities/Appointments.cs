@@ -6,9 +6,12 @@ namespace _3alegny.Entities
     {
         public ObjectId Id { get; set; }
         public DateTime AppointmentDate { get; set; }
+        public string AppointmentTime { get; set; }
+        public string Status { get; set; }
+        public string DoctorName { get; set; }
+        public string Department { get; set; }
+        public PHR PHR { get; set; }
         public string PatientId { get; set; }
-        public Patient Patient { get; set; }
-        public string HospitalId { get; set; }
-        public Hospital Hospital { get; set; }
+        public string HospitalName { get; set; }
     }
 }

@@ -34,6 +34,38 @@ namespace _3alegny.Service_layer
             }
         }
 
+        // Update patient info by ID
+        public async Task<PatientResult<PatientUpdateRequest>> UpdatePatient(string id, PatientUpdateRequest patient)
+        {
+            try
+            {
+                var objectId = new ObjectId(id); // Convert string ID to MongoDB ObjectId
+                var updateResult = await _context.Patients.UpdateOneAsync
+                    (
+                        u => u.Id == objectId,
+                        Builders<Patient>.Update
+                        .Set(p => p.UserName, patient.UserName)
+                        .Set(p => p.contactInfo.Email, patient.Email)
+                        .Set(p => p.contactInfo.Phone, patient.Phone)
+                        .Set(p => p.Address.Street, patient.Street)
+                        .Set(p => p.Address.City, patient.City)
+                        .Set(p => p.Address.State, patient.State)
+                        .Set(p => p.Address.ZipCode, patient.ZipCode)
+                        .Set(p => p.ImageUrl, patient.imageUrl)
+                    );
+                return updateResult.ModifiedCount == 0
+                    ? new PatientResult<PatientUpdateRequest> { IsSuccess = false, Message = "Patient update failed." }
+                    : new PatientResult<PatientUpdateRequest> { IsSuccess = true, Message = "Patient updated successfully." };
+
+            }
+            catch (Exception ex)
+            {
+                return new PatientResult<PatientUpdateRequest> { IsSuccess = false, Message = $"Error: {ex.Message}" };
+            }
+        }
+
+
+        // Create a new PHR for a patient
         public async Task<patientPHR<string>> PostPHR(string pid, phrRequest phr)
         {
             try
