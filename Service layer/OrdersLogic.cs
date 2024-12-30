@@ -38,8 +38,11 @@ namespace _3alegny.Service_layer
                     {
                         Name = drug,
                         Category = neworder.DrugCategories[index],
-                        Quantity = neworder.DrugQuantities[index]
+                        Quantity = neworder.DrugQuantities[index],      
+                        Price = _context.Drugs.Find(d => d.Name == drug).FirstOrDefault().Price
                     }).ToList(),
+                    //Calculating total drug quantity
+                    TotalDrugQuantity = neworder.DrugQuantities.Sum(),
                     //Calculating the total cost of the order
                     TotalCost = (int)neworder.Drugs.Select((drug, index) => neworder.DrugQuantities[index] * _context.Drugs.Find(d => d.Name == drug).FirstOrDefault().Price).Sum(),
                     OrderDate = DateTime.Now,
