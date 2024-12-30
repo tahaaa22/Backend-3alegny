@@ -9,7 +9,7 @@ public static class PatientEndpoints
     {
         app.MapPost("/patient/newphr/{patientid}", (Func<string,phrRequest, PatientLogic, IResult>)((pid,request, logic) =>
         {
-            var result = logic.PostPHR(request).Result;
+            var result = logic.PostPHR(pid,request).Result;
             return result.IsSuccess ? Results.Ok(result.Message) : Results.BadRequest(result.Message);
         })).WithTags("Patient")
         .WithOpenApi(operation => new(operation)
@@ -20,7 +20,7 @@ public static class PatientEndpoints
         }
         );
 
-        app.MapPost("/patient/updatephr/{id}", (Func<string, phrRequest, PatientLogic, IResult>)((id, request, logic) =>
+        app.MapPut("/patient/updatephr/{id}", (Func<string, phrRequest, PatientLogic, IResult>)((pid, request, logic) =>
         {
             var result = logic.UpdatePHR(pid, request).Result;
             return result.IsSuccess ? Results.Ok(result.Message) : Results.BadRequest(result.Message);
