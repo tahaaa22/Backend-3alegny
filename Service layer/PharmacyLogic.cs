@@ -44,7 +44,10 @@ namespace _3alegny.Service_layer
                     Id = ObjectId.GenerateNewId(),
                     Name = drug.Name,
                     Quantity = drug.Quantity,
-                    Price = drug.Price
+                    Price = drug.Price,
+                    Category = drug.Category,
+                    Type=drug.Type,
+                    Manufacturer=drug.Manufacturer
                 };
                 // Check if the drug already exists using drug name
                 var drugcheck = await _context.Drugs.Find(d => d.Name == drug.Name).FirstOrDefaultAsync();
@@ -53,10 +56,7 @@ namespace _3alegny.Service_layer
                 {
                     await _context.Drugs.InsertOneAsync(newdrug);
                 }
-                else
-                {
-                    return new DrugsResult { IsSuccess = false,Message = "Drug already added" };
-                }
+               
                 var pharmacy = await _context.Pharmacies.Find(p => p.Id == ObjectId.Parse(pharmacyId)).FirstOrDefaultAsync();
                 if (pharmacy == null)
                 {
