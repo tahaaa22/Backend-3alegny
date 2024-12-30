@@ -58,6 +58,7 @@ namespace _3alegny.Service_layer
                 //Add the order to the orders collection and patient collection
                 await _context.Orders.InsertOneAsync(order);
                 patient.Orders.Add(order);
+                await _context.Patients.ReplaceOneAsync(h => h.Id == patient.Id, patient);
                 return new OrderResult<string> { IsSuccess = true, Message = "Order created successfully" };
             }
             catch (Exception ex)

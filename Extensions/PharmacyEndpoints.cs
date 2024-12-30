@@ -47,6 +47,28 @@ public static class PharmacyEndpoints
             OperationId = "PUTDrug",
         });
 
+        app.MapPost("/pharmacy/create-bill", async ([FromBody] PharmacyBilling bill, [FromServices] PharmacyLogic logic) =>
+        {
+            try
+            {
+                var billId = await logic.CreatePharmacyBill(bill);
+                return Results.Ok(new { Success = true, Message = "Bill created successfully", BillId = billId });
+            }
+            catch (Exception e)
+            {
+                return Results.BadRequest(new { Success = false, Message = e.Message });
+            }
+        })
+.WithTags("Pharmacy")
+.WithOpenApi(operation => new(operation)
+{
+    Summary = "Create a pharmacy bill",
+    Description = "This endpoint allows the creation of a pharmacy bill, calculating the total price and quantity of drugs based on the input data.",
+    OperationId = "CreatePharmacyBill"
+});
+
+
+
         // Getting List of All Drugs
         app.MapGet("/Pharmacy/Drugs", async ([FromServices] PharmacyLogic logic) =>
         {

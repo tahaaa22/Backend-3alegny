@@ -93,6 +93,8 @@ namespace _3alegny.Entities
         public ObjectId Id { get; set; }
         public string PatientId { get; set; }
         public string PatientName { get; set; }
+
+        
     }
 
     public class HospitalBilling : Billing
@@ -107,6 +109,26 @@ namespace _3alegny.Entities
 
         public string InsuranceDetails { get; set; }
 
+    }
+
+    public class PharmacyBilling : Billing
+    {
+        public string PatientAddress { get; set; }
+
+        public string PharmacyName { get; set; }
+
+
+        public List <string> DrugNames { get; set; }
+
+
+        public List<float> DrugPrices { get; set; }
+
+        public List<int> Quantities { get; set; }
+        
+
+        public int TotalQuantity { get; set; }
+
+        public int TotalPrice { get; set; }
     }
 
 
