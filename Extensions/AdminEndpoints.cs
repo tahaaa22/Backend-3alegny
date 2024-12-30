@@ -15,7 +15,7 @@ public static class AdminEndpoints
         app.MapGet("/admin/users", (Func<AdminLogic, IResult>)(logic =>
         {
             var result = logic.GetAllUsers().Result;
-            return result.IsSuccess ? Results.Ok(result.Data) : Results.NotFound(result.Message);
+            return result.IsSuccess ? Results.Ok(result) : Results.NotFound(result.Message);
         })).WithTags("Admin");
 
         // Admin - Get a user by specific ID
