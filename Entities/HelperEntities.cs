@@ -1,4 +1,5 @@
 ﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace _3alegny.Entities
 {
@@ -85,4 +86,29 @@ namespace _3alegny.Entities
         public List<DateTime> AvailableSlots { get; set; } = new List<DateTime>(); 
         public List<DateTime> RegisteredSlots { get; set; } = new List<DateTime>(); //neglect it in add doctor response 
     }
+
+    public class Billing
+    {
+        [BsonId]
+        public ObjectId Id { get; set; }
+        public string PatientId { get; set; }
+        public string PatientName { get; set; }
+    }
+
+    public class HospitalBilling : Billing
+    {
+
+       
+        public string DoctorID { get; set; }
+        public string DoctorName { get; set; }
+        public string DepartmentName { get; set; }
+
+        public int AppointmentFee { get; set; }
+
+        public string InsuranceDetails { get; set; }
+
+    }
+
+
+
 }

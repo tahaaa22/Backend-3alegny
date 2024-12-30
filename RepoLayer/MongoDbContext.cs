@@ -21,6 +21,7 @@ public class MongoDbContext : DbContext
     public IMongoCollection<Order> Orders => _database.GetCollection<Order>("Orders");
     public IMongoCollection<Appointments> Appointments => _database.GetCollection<Appointments>("Appointments");
     public IMongoCollection<Drugs> Drugs => _database.GetCollection<Drugs>("Drugs");
+    public IMongoCollection<HospitalBilling> HospitalBills => _database.GetCollection<HospitalBilling>("HospitalBills");
 
 
 

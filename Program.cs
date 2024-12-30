@@ -1,8 +1,5 @@
-using _3alegny.Extensions;
 using _3alegny.RepoLayer;
 using _3alegny.Service_layer;
-using DotNetEnv;
-using Microsoft.AspNetCore.Authentication;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -52,6 +49,7 @@ builder.Services.AddScoped<PharmacyLogic>();
 builder.Services.AddScoped<CommonLogic>();
 builder.Services.AddScoped<HospitalLogic>();
 builder.Services.AddScoped<AppointmentLogic>();
+builder.Services.AddScoped<OrdersLogic>();
 
 builder.Services.AddCors(options =>
 {
@@ -74,6 +72,7 @@ app.MapCommonEndpoints();
 app.MapHospitalEndpoints();
 app.MapPharmacyEndpoints();
 app.MapAppointmentEndpoints();
+app.MapOrderEndpoints();
 
 app.UseSwagger();
 app.UseSwaggerUI(options=>
