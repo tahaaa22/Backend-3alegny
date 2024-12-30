@@ -5,7 +5,7 @@ namespace _3alegny.Entities
 {
     public class PHR
     {
-        
+
         public ObjectId Id { get; set; }
         public string PatientId { get; set; }
         public string Notes { get; set; }

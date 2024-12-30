@@ -88,23 +88,23 @@ public static class PatientEndpoints
         });
 
         // select all avaliable hospitals depends on the filters
-        //  app.MapPost("/patient/hospitals", async ([FromBody] HospitalFiltrationRequest<Hospital> request, [FromServices] PatientLogic logic) =>
-        //  {
-        //      var result = await logic.GetAvailableHospitals(request); 
-        //      return result.IsSuccess ? Results.Ok(result.Data) : Results.NotFound(result.Message);
-        //  }).WithTags("Patient");
+        app.MapPost("/patient/hospitals", async ([FromBody] HospitalFiltrationRequest<Hospital> request, [FromServices] PatientLogic logic) =>
+        {
+            var result = await logic.GetAvailableHospitals(request);
+            return result.IsSuccess ? Results.Ok(result.Data) : Results.NotFound(result.Message);
+        }).WithTags("Patient");
 
-        //  app.MapGet("/patient/pharmacies", async ([FromServices] PatientLogic logic) =>
-        //  {
-        //      var result = await logic.GetAllPharmacies();
-        //      return Results.Ok(result);
-        //  }).WithTags("Patient")
-        //.WithOpenApi(operation => new(operation)
-        //{
-        //    Summary = "Get List of All pahrmacies",
-        //    Description = "this endpoint allow to get the list of all pharmacies",
-        //    OperationId = "GETpharmacies",
-        //});
+        app.MapGet("/patient/pharmacies", async ([FromServices] PatientLogic logic) =>
+        {
+            var result = await logic.GetAllPharmacies();
+            return Results.Ok(result);
+        }).WithTags("Patient")
+      .WithOpenApi(operation => new(operation)
+      {
+          Summary = "Get List of All pahrmacies",
+          Description = "this endpoint allow to get the list of all pharmacies",
+          OperationId = "GETpharmacies",
+      });
     }
 
 
