@@ -195,7 +195,6 @@ namespace _3alegny.Service_layer
         }
 
 
-
         public class PharmacyResult<T>
         {
             public bool IsSuccess { get; set; }
@@ -206,7 +205,6 @@ namespace _3alegny.Service_layer
 
         public class DrugsResult
         {
-
             public bool IsSuccess { get; set; }
             public Drugs? Data { get; set; }
             public required string Message { get; set; }

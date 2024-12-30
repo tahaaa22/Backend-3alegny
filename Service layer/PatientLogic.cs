@@ -3,6 +3,7 @@ using MongoDB.Driver;
 using _3alegny.Entities;
 using _3alegny.RepoLayer;
 using static PatientEndpoints;
+using System.CodeDom.Compiler;
 
 namespace _3alegny.Service_layer
 {
@@ -33,25 +34,33 @@ namespace _3alegny.Service_layer
             }
         }
 
-        public async Task<patientPHR<string>> PostPHR(phrRequest phr)
+        public async Task<patientPHR<string>> PostPHR(string pid, phrRequest phr)
         {
             try
             {
                 // Map PostPHR to PHR
                 var PHR = new PHR
                 {
+                    PatientId = pid,
                     Allergies = phr.Allergies,
                     ChronicIllness = phr.ChronicIllness,
                     Diagnosis = phr.Diagnosis,
                     Medication = phr.Medication,
                     FamilyHistory = phr.FamilyHistory,
                     ImagingResults = phr.ImagingResults,
-                    LabResults = phr.LabResults,
+                    LabResultsURL = phr.LabResultsURL,
                     MedicalProcedures = phr.MedicalProcedures,
-                    PrescriptionHistory = phr.PrescriptionHistory
+                    PrescriptionHistory = phr.PrescriptionHistory,
+                    Weight = new List<int> { phr.Weight },
+                    Height = new List<int> { phr.Height },
+                    BMI = new List<int>{phr.BMI}
                 };
 
                 await _context.PHRs.InsertOneAsync(PHR);
+                await _context.Patients.UpdateOneAsync(
+                            u => u.Id == ObjectId.Parse(pid),
+                            Builders<Patient>.Update.Set(p => p.PHR, PHR)
+                        );
                 return new patientPHR<string> { IsSuccess = true, Message = "PHR uploaded successfully." };
             }
             catch (Exception ex)
@@ -60,51 +69,80 @@ namespace _3alegny.Service_layer
             }
         }
 
-        public async Task<patientPHR<string>> UpdatePHR(string id, phrRequest updatedPhr)
+        public async Task<patientPHR<PHR>> UpdatePHR(string pid, phrRequest updatedPhr)
         {
             try
             {
                 // Parse the ObjectId
-                var objectId = ObjectId.Parse(id);
+                var objectId = ObjectId.Parse(pid);
 
-                // Define the filter to locate the document by ID
-                var filter = Builders<PHR>.Filter.Eq(p => p.PHRId, objectId);
+                // Find the patient by ID
+                var patient = await _context.Patients.Find(p => p.Id == objectId).FirstOrDefaultAsync();
+                if (patient == null)
+                {
+                    return new patientPHR<PHR> { IsSuccess = false, Message = "Patient not found." };
+                }
 
-                // Define the update operation
-                var update = Builders<PHR>.Update
-                    .Set(p => p.Allergies, updatedPhr.Allergies)
-                    .Set(p => p.ChronicIllness, updatedPhr.ChronicIllness)
-                    .Set(p => p.Diagnosis, updatedPhr.Diagnosis)
-                    .Set(p => p.Medication, updatedPhr.Medication)
-                    .Set(p => p.FamilyHistory, updatedPhr.FamilyHistory)
-                    .Set(p => p.ImagingResults, updatedPhr.ImagingResults)
-                    .Set(p => p.LabResults, updatedPhr.LabResults)
-                    .Set(p => p.MedicalProcedures, updatedPhr.MedicalProcedures)
-                    .Set(p => p.PrescriptionHistory, updatedPhr.PrescriptionHistory);
+                // Find the existing PHR by patient ID
+                var existingPHR = await _context.PHRs.Find(p => p.PatientId == pid).FirstOrDefaultAsync();
+                if (existingPHR == null)
+                {
+                    return new patientPHR<PHR> { IsSuccess = false, Message = "PHR not found." };
+                }
 
-                var result = await _context.PHRs.UpdateOneAsync(filter, update);
+                // Map updated PHR to existing PHR
+                existingPHR.Allergies = updatedPhr.Allergies;
+                existingPHR.ChronicIllness = updatedPhr.ChronicIllness;
+                existingPHR.Diagnosis = updatedPhr.Diagnosis;
+                existingPHR.Medication = updatedPhr.Medication;
+                existingPHR.FamilyHistory = updatedPhr.FamilyHistory;
+                existingPHR.ImagingResults = updatedPhr.ImagingResults;
+                existingPHR.LabResultsURL = updatedPhr.LabResultsURL;
+                existingPHR.MedicalProcedures = updatedPhr.MedicalProcedures;
+                existingPHR.PrescriptionHistory = updatedPhr.PrescriptionHistory;
+                existingPHR.Weight.Add(updatedPhr.Weight);
+                existingPHR.Height.Add(updatedPhr.Height);
+                existingPHR.BMI.Add(updatedPhr.BMI);
 
-                if (result.MatchedCount == 0)
-                    return new patientPHR<string> { IsSuccess = false, Message = "PHR not found." };
+                // Update the PHR
+                await _context.PHRs.ReplaceOneAsync(p => p.Id == existingPHR.Id, existingPHR);
+                // Update the Patient's PHR reference
+                var updatePatientResult = await _context.Patients.UpdateOneAsync(
+                    p => p.Id == objectId,
+                    Builders<Patient>.Update.Set(p => p.PHR, existingPHR)
+                );
+                if (updatePatientResult.ModifiedCount == 0)
+                {
+                    return new patientPHR<PHR> { IsSuccess = false, Message = "Patient update failed." };
+                }
 
-                return new patientPHR<string> { IsSuccess = true, Message = "PHR updated successfully." };
+                return new patientPHR<PHR> { IsSuccess = true, Data = existingPHR, Message = "PHR and Patient updated successfully" };
+               
             }
             catch (Exception ex)
             {
-                return new patientPHR<string> { IsSuccess = false, Message = $"An error occurred: {ex.Message}" };
+                return new patientPHR<PHR> { IsSuccess = false, Message = $"An error occurred: {ex.Message}" };
             }
         }
-
-        public async Task<patientPHR<PHR>> GetPHR(string id)
+        //Get PHR by id
+        public async Task<patientPHR<PHR>> GetPHR(string patientId)
         {
             try
             {
-                var phrId = new ObjectId(id);
-                var phr = await _context.PHRs.Find(u => u.PHRId == phrId).FirstOrDefaultAsync();
+                // Find the patient by PatientId
+                var patient = await _context.Patients.Find(p => p.Id == ObjectId.Parse(patientId)).FirstOrDefaultAsync();
+                if (patient == null)    
+                {
+                    return new patientPHR<PHR> { IsSuccess = false, Message = "Patient not found." };
+                }
+
+                // Retrieve the PHR associated with the patient
+                var phr = patient.PHR;
                 if (phr == null)
                 {
-                    return new patientPHR<PHR> { IsSuccess = false, Message = "User not found." };
+                    return new patientPHR<PHR> { IsSuccess = false, Message = "PHR not found for the given patient." };
                 }
+
                 return new patientPHR<PHR> { IsSuccess = true, Data = phr };
             }
             catch (Exception e)
@@ -112,7 +150,22 @@ namespace _3alegny.Service_layer
                 return new patientPHR<PHR> { IsSuccess = false, Message = $"Error: {e.Message}" };
             }
         }
-
+        public async Task<AdminResult<List<Pharmacy>>> GetAllPharmacies()
+        {
+            try
+            {
+                var pharmacy = await _context.Pharmacies.Find(_ => true).ToListAsync();
+                if (pharmacy == null || !pharmacy.Any())
+                {
+                    return new AdminResult<List<Pharmacy>> { IsSuccess = false, Message = "No Patients found." };
+                }
+                return new AdminResult<List<Pharmacy>> { IsSuccess = true, Data = pharmacy, Message = "all users returned" };
+            }
+            catch (Exception ex)
+            {
+                return new AdminResult<List<Pharmacy>> { IsSuccess = false, Message = $"Error: {ex.Message}" };
+            }
+        }
         public async Task<PatientResult<List<Hospital>>> GetAvailableHospitals(HospitalFiltrationRequest<Hospital> FilteredHospital)
         {
             try
@@ -171,7 +224,7 @@ namespace _3alegny.Service_layer
                 }
 
                 // Execute the query and get the result list
-                var hospitals = await _context.Hospitals.Find(h=> h.Equals(query)).ToListAsync();
+                var hospitals = await _context.Hospitals.Find(h => h.Equals(query)).ToListAsync();
 
                 if (!hospitals.Any())
                 {
@@ -190,10 +243,6 @@ namespace _3alegny.Service_layer
                 return new PatientResult<List<Hospital>> { IsSuccess = false, Message = $"Error: {ex.Message}" };
             }
         }
-
-
-
-
 
     }
 }

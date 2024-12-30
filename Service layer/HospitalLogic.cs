@@ -292,7 +292,7 @@ namespace _3alegny.Service_layer
             if (patient != null)
             {
                 var updateDefinition = Builders<Patient>.Update.Set(p => p.EHR, updatedEHR);
-                await _context.Patients.UpdateOneAsync(p => p.Id == patient.Id, updateDefinition);
+                await _context.Patients.UpdateOneAsync(p => p.Id == patient.Id, updateDefinition);  
             }
             return "EHR updated successfully";
         }

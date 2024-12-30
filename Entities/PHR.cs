@@ -5,7 +5,8 @@ namespace _3alegny.Entities
 {
     public class PHR
     {
-        public ObjectId PHRId { get; set; }
+        
+        public ObjectId Id { get; set; }
         public string PatientId { get; set; }
         public string Notes { get; set; }
         public string AdminId { get; set; }
@@ -18,8 +19,11 @@ namespace _3alegny.Entities
         public string Medication { get; set; }
         public string FamilyHistory { get; set; }
         public string ImagingResults { get; set; }
-        public string LabResults { get; set; }
+        public string LabResultsURL { get; set; }
         public string MedicalProcedures { get; set; }
         public string PrescriptionHistory { get; set; }
+        public List<int> Weight { get; set; } = new List<int>();
+        public List<int> Height { get; set; } = new List<int>();
+        public List<int> BMI { get; set; } = new List<int>();
     }
 }
