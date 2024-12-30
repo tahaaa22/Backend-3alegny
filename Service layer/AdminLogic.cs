@@ -73,17 +73,34 @@ namespace _3alegny.Service_layer
             return hasher.HashPassword(null, password);
         }
 
-        // Get all Patients
+        // Get all Users
         public async Task<AdminResult<List<Patient>>> GetAllUsers()
         {
             try
             {
-                var Patients = await _context.Patients.Find(_ => true).ToListAsync(); // Get all Patients
+                // Get all Patients
+                var Patients = await _context.Patients.Find(_ => true).ToListAsync(); 
                 if (Patients == null || !Patients.Any())
                 {
                     return new AdminResult<List<Patient>> { IsSuccess = false, Message = "No Patients found." };
                 }
-                return new AdminResult<List<Patient>> { IsSuccess = true, Data = Patients , Message = "all users returned"};
+                //Count the number of patients as a number
+                var countPatients = await _context.Patients.CountDocumentsAsync(_ => true);
+
+
+
+
+
+                //Count the number of hospitals
+                var countHospitals = await _context.Hospitals.CountDocumentsAsync(_ => true);
+
+                //Count the number of pharmacies
+                var countPharmacies = await _context.Pharmacies.CountDocumentsAsync(_ => true);
+
+                //Return the count of each entity
+                return new AdminResult<List<Patient>> { IsSuccess = true, Message = $"all users returned, Patients: {countPatients}, Hospitals: {countHospitals}, Pharmacies: {countPharmacies}" };
+
+
             }
             catch (Exception ex)
             {
