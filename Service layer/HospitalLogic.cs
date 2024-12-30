@@ -63,7 +63,7 @@ namespace _3alegny.Service_layer
                 AppointmentFee = doctor.AppointmentFee,
                 ImageUrl = doctor.ImageUrl,
                 AvailableSlots = doctor.AvailableSlots ?? new List<DateTime>()
-               
+
             };
 
 
@@ -102,7 +102,7 @@ namespace _3alegny.Service_layer
             doctor.Specialty = updatedDoctor.Specialty ?? doctor.Specialty;
             doctor.License = updatedDoctor.License ?? doctor.License;
             doctor.Description = updatedDoctor.Description ?? doctor.Description;
-            doctor.address.City = updatedDoctor.City ??  doctor.address.City;
+            doctor.address.City = updatedDoctor.City ?? doctor.address.City;
             doctor.address.State = updatedDoctor.State ?? doctor.address.State;
             doctor.address.ZipCode = updatedDoctor.Zipcode ?? doctor.address.ZipCode;
             doctor.address.Street = updatedDoctor.Street ?? doctor.address.Street;
@@ -122,14 +122,14 @@ namespace _3alegny.Service_layer
                 Success = true,
                 Message = "Doctor details updated successfully",
                 Doctor = new
-                {   
+                {
                     doctor.Id,
                     doctor.Name,
                     doctor.Specialty,
                     doctor.License,
                     doctor.Description,
                     doctor.address,
-                   
+
                     doctor.AppointmentFee,
                     doctor.ImageUrl,
                     doctor.AvailableSlots
@@ -238,7 +238,7 @@ namespace _3alegny.Service_layer
             return "EHR created successfully";
         }
 
-       
+
         public async Task<EHR> GetEHRById(string ehrId)
         {
             // Validate if the provided ehrId is a valid ObjectId
@@ -273,7 +273,7 @@ namespace _3alegny.Service_layer
             if (patient != null)
             {
                 var updateDefinition = Builders<Patient>.Update.Set(p => p.EHR, updatedEHR);
-                await _context.Patients.UpdateOneAsync(p => p.Id == patient.Id, updateDefinition);  
+                await _context.Patients.UpdateOneAsync(p => p.Id == patient.Id, updateDefinition);
             }
             return "EHR updated successfully";
         }
@@ -296,11 +296,49 @@ namespace _3alegny.Service_layer
             }
         }
 
+        // Add Followup
+        public async Task<FollowupResult> AddFollowUp(string pname, FollowupRequest followup)
+        {
+            try
+            {
+                // Search for pid using pname
+                var patient = await _context.Patients.Find(p => p.Name == pname).FirstOrDefaultAsync();
+                if (patient == null)
+                {
+                    return new FollowupResult { IsSuccess = false, Message = "Patient not found" };
+                }
+                else
+                {   // Create a new followup object
+                    var newFollowup = new FollowUp
+                    {
+                        PatientId = patient.Id.ToString(),
+                        DoctorId = followup.DoctorName,
+                        Date = followup.Date,
+                        Notes = followup.Notes,
+                        Department = followup.Department,
+                    };
 
+                    // Add the followup to the patient's followups list
+                    patient.FollowUp.Add(newFollowup);
+
+                    // Save the updated patient back to the database
+                    await _context.Patients.ReplaceOneAsync(p => p.Id == patient.Id, patient);
+
+                    return new FollowupResult { IsSuccess = true, Data = newFollowup, Message = "Follow-up added successfully" };
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return new FollowupResult { IsSuccess = false, Message = $"Error: {ex.Message}" };
+            }
+
+        }
 
         //public async Task<object> UpdateDepartmentlById(string hospitalId, UpdateDoctorRequest updatedHospital)
         //{
-         
+
         //}
 
 
@@ -347,10 +385,13 @@ namespace _3alegny.Service_layer
             public required string Message { get; set; }
         }
 
-   
+        public class FollowupResult
+        {
+            public bool IsSuccess { get; set; }
+            public FollowUp? Data { get; set; }
+            public string Message { get; set; }
 
-
+        }
 
     }
-
 }

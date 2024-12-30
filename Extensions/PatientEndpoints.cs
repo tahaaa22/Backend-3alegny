@@ -74,6 +74,19 @@ public static class PatientEndpoints
             OperationId = "UpdatePatient",
         });
 
+        //Get Followup requests for a patient
+        //app.MapGet("/patient/followup/{id}", (Func<string, PatientLogic, IResult>)((id, logic) =>
+        //{
+        //    var result = logic.GetFollowUp(id).Result;
+        //    return Results.Ok(result);
+        //})).WithTags("Patient")
+        //.WithOpenApi(operation => new(operation)
+        //{
+        //    Summary = "Get Followup requests",
+        //    Description = "This endpoint allows patients to get their followup requests.",
+        //    OperationId = "GetFollowup",
+        //});
+
         // select all avaliable hospitals depends on the filters
         app.MapPost("/patient/hospitals", async ([FromBody] HospitalFiltrationRequest<Hospital> request, [FromServices] PatientLogic logic) =>
         {
@@ -129,7 +142,8 @@ public static class PatientEndpoints
         string Street,
         string City,
         string State,
-        string ZipCode
+        string ZipCode,
+        string InsuranceName
 
 
     );

@@ -55,6 +55,7 @@ namespace _3alegny.Entities
         public string DoctorId { get; set; }
         public string Date { get; set; }
         public string Notes { get; set; }
+        public string Department { get; set; }
     }
 
     // Helper Class: ContactInfo

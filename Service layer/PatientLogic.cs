@@ -52,6 +52,8 @@ namespace _3alegny.Service_layer
                         .Set(p => p.Address.State, patient.State)
                         .Set(p => p.Address.ZipCode, patient.ZipCode)
                         .Set(p => p.ImageUrl, patient.imageUrl)
+                        .AddToSet(p => p.Insurance, new Insurance { providerName = patient.InsuranceName })
+
                     );
                 return updateResult.ModifiedCount == 0
                     ? new PatientResult<PatientUpdateRequest> { IsSuccess = false, Message = "Patient update failed." }
@@ -244,9 +246,6 @@ namespace _3alegny.Service_layer
                 var filterdByprice = hospital.FindAll(h => h.Address.City == FilteredHospital.street);
 
                 return new PatientResult<List<Hospital>> { IsSuccess = true, Data = filterdByLocation, Message = "all users returned" };
-
-
-                return new PatientResult<List<Hospital>> { Message = "true" };
             }
             catch (Exception ex)
             {
@@ -258,6 +257,8 @@ namespace _3alegny.Service_layer
             }
         }
 
+        // Get followup from patient id
+        //public async Task<>
 
 
     }

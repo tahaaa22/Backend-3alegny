@@ -175,6 +175,19 @@ public static class HospitalEndpoints
           }
           );
 
+        app.MapPost("/Hospital/followup",(Func<string,FollowupRequest,HospitalLogic,IResult>)((pname,request,logic) =>
+        {
+            var result = logic.AddFollowUp(pname, request).Result;
+            return result.IsSuccess ? Results.Ok(result.Message) : Results.BadRequest(result.Message);
+        })).WithTags("Hospital")
+            .WithOpenApi(operation => new(operation)
+            {
+                Summary = "Add a follow-up",
+                Description = "This endpoint allows hospitals to add a follow-up for a patient.",
+                OperationId = "AddFollowUp",
+            });
+        
+
 
         //app.MapPut("/Hospital/update/{hospitalId}", async ([FromServices] HospitalLogic logic, string hospitalId, [FromBody] Hospital updatedHospital) =>
         //{
@@ -210,6 +223,15 @@ public static class HospitalEndpoints
          
          );
 
+
+    public record FollowupRequest
+    {
+        public string PatientName { get; set; }
+        public string DoctorName { get; set; }
+        public string Date { get; set; }
+        public string Notes { get; set; }
+        public string Department { get; set; }
+    }
 
     public record DoctorResponse(
     string? Id,
