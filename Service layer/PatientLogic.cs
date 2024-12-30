@@ -225,26 +225,91 @@ namespace _3alegny.Service_layer
 
         }
 
+        public string? address { get; set; }
+        public string? rating { get; set; }
+        public string? department { get; set; }
+        public string? price { get; set; }
+        public string? Role { get; set; }
+        public required string Message { get; set; }
+
         public async Task<PatientResult<List<Hospital>>> GetAvailableHospitals(HospitalFiltrationRequest<Hospital> FilteredHospital)
         {
             try
             {
-                var hospital = await _context.Hospitals.Find(_ => true).ToListAsync(); // Get all Patients
-                if (hospital == null || !hospital.Any())
-                {
-                    return new PatientResult<List<Hospital>> { IsSuccess = false, Message = "No Hospital found." };
-                }
-                var filterdByLocation = hospital.FindAll(h => h.Address.City == FilteredHospital.street);
-                if (filterdByLocation == null || !filterdByLocation.Any())
-                {
-                    return new PatientResult<List<Hospital>> { IsSuccess = false, Message = "No Hospital found." };
-                }
-                if(FilteredHospital.price == "string" && FilteredHospital.department == "string" && FilteredHospital.rating == "string")
-                {
-                    return new PatientResult<List<Hospital>> { IsSuccess = true, Data = filterdByLocation, Message = "all users returned" };
-                }
-                var filterdByprice = hospital.FindAll(h => h.Address.City == FilteredHospital.street);
+                // Fetch all hospitals initially
+                var hospitals = await _context.Hospitals.Find(_ => true).ToListAsync();
 
+                if (hospitals == null || !hospitals.Any())
+                {
+                    return new PatientResult<List<Hospital>>
+                    {
+                        IsSuccess = false,
+                        Message = "No hospitals found."
+                    };
+                }
+
+                // Apply dynamic filtering
+                if (!string.IsNullOrEmpty(FilteredHospital.street) && FilteredHospital.street != "string")
+                {
+                    hospitals = hospitals.FindAll(h => h.Address.City == FilteredHospital.street);
+                }
+
+                if (!string.IsNullOrEmpty(FilteredHospital.rating) && FilteredHospital.rating != "string")
+                {
+                    if (double.TryParse(FilteredHospital.rating, out double rating))
+                    {
+                        hospitals = hospitals.FindAll(h => h.Rating >= rating);
+                    }
+                    else
+                    {
+                        return new PatientResult<List<Hospital>>
+                        {
+                            IsSuccess = false,
+                            Message = "Invalid rating value."
+                        };
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(FilteredHospital.department) && FilteredHospital.department != "string")
+                {
+                    hospitals = hospitals.FindAll(h => h.Departments.Any(d => d.Name == FilteredHospital.department));
+                }
+
+                if (!string.IsNullOrEmpty(FilteredHospital.price) && FilteredHospital.price != "string")
+                {
+                    if (int.TryParse(FilteredHospital.price, out int maxPrice))
+                    {
+                        hospitals = hospitals.FindAll(h =>
+                            h.Departments.Any(d =>
+                                d.AvaliableDoctors != null &&
+                                d.AvaliableDoctors.Any(doc => doc.AppointmentFee <= maxPrice)));
+                    }
+                    else
+                    {
+                        return new PatientResult<List<Hospital>>
+                        {
+                            IsSuccess = false,
+                            Message = "Invalid price value."
+                        };
+                    }
+                }
+
+                // Final check for results
+                if (hospitals == null || !hospitals.Any())
+                {
+                    return new PatientResult<List<Hospital>>
+                    {
+                        IsSuccess = false,
+                        Message = "No hospitals found matching the given filters."
+                    };
+                }
+
+                return new PatientResult<List<Hospital>>
+                {
+                    IsSuccess = true,
+                    Data = hospitals,
+                    Message = "Filtered hospitals returned successfully."
+                };
                 return new PatientResult<List<Hospital>> { IsSuccess = true, Data = filterdByLocation, Message = "all users returned" };
             }
             catch (Exception ex)
@@ -259,6 +324,8 @@ namespace _3alegny.Service_layer
 
         // Get followup from patient id
         //public async Task<>
+
+
 
 
     }
@@ -276,4 +343,17 @@ public class patientPHR<T>
     public bool IsSuccess { get; set; }
     public string Message { get; set; }
     public T? Data { get; set; }
+}
+
+
+public class FilteredHospitalResponse
+{
+    public bool IsSuccess { get; set; }
+    public string? address { get; set; }
+    public string? rating { get; set; }
+    public string? department { get; set; }
+    public string? price { get; set; }
+    public string? Role { get; set; }
+    public required string Message { get; set; }
+
 }

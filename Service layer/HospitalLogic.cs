@@ -220,6 +220,9 @@ namespace _3alegny.Service_layer
 
         public async Task<string> CreateEHR(EHR ehr)
         {
+            // Normalize Birthdate to date-only (set time to 00:00:00)
+            ehr.Birthdate = ehr.Birthdate.Date;
+
             // Check if the patient already has an EHR
             var existingEHR = await _context.EHRs.Find(e => e.PatientId == ehr.PatientId).FirstOrDefaultAsync();
             if (existingEHR != null)
@@ -229,14 +232,15 @@ namespace _3alegny.Service_layer
             await _context.EHRs.InsertOneAsync(ehr);
 
             var updateDefinition = Builders<Patient>.Update
-            .Set(e => e.EHR, ehr);  // Update specific fields
-
+                .Set(e => e.EHR, ehr);  // Update specific fields
 
             await _context.Patients
                 .UpdateOneAsync(e => e.Id == ObjectId.Parse(ehr.PatientId), updateDefinition);
 
             return "EHR created successfully";
         }
+
+
 
 
         public async Task<EHR> GetEHRById(string ehrId)
@@ -262,12 +266,18 @@ namespace _3alegny.Service_layer
             // Validate if the provided ehrId is a valid ObjectId
             if (!ObjectId.TryParse(ehrId, out _))
                 throw new Exception("Invalid EHR ID");
+
+            // Normalize Birthdate to date-only (set time to 00:00:00)
+            updatedEHR.Birthdate = updatedEHR.Birthdate.Date;
+
             // Ensure the updated EHR keeps the original ID
             updatedEHR.Id = ObjectId.Parse(ehrId);
+
             // Replace the existing EHR document with the updated one
             var result = await _context.EHRs.ReplaceOneAsync(e => e.Id == ObjectId.Parse(ehrId), updatedEHR);
             if (result.MatchedCount == 0)
                 throw new Exception("EHR not found");
+
             // Now, update the patient's EHR field in the Patients collection
             var patient = await _context.Patients.Find(p => p.Id == ObjectId.Parse(updatedEHR.PatientId)).FirstOrDefaultAsync();
             if (patient != null)
@@ -275,8 +285,10 @@ namespace _3alegny.Service_layer
                 var updateDefinition = Builders<Patient>.Update.Set(p => p.EHR, updatedEHR);
                 await _context.Patients.UpdateOneAsync(p => p.Id == patient.Id, updateDefinition);
             }
+
             return "EHR updated successfully";
         }
+
 
         public async Task<HospitalResult> GetHospitalById(string id)
         {

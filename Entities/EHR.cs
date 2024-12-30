@@ -11,35 +11,56 @@ public class EHR
 
     [BsonRepresentation(BsonType.ObjectId)]
     public string PatientId { get; set; }
-    // Patient Demographics
-    public string PatientName { get; set; }
-    public int PatientAge { get; set; }
-    public string PatientGender { get; set; }
-    public string PatientContactDetails { get; set; }
-    public string PatientInsuranceInfo { get; set; }
-    public string MedicalHistory { get; set; }
+   
+    
+    public string? PatientName { get; set; }
+    public DateTime Birthdate  { get; set; } 
+    public string? PatientGender { get; set; }
+
+
+
+    /// ////////ADD////////////
+
+    public string? Address { get; set; }
+    public string? Phone { get; set; }
+    public string? Email { get; set; }
+
+
+    public double? Temperature { get; set; } // e.g., 36.5
+    public double? Weight { get; set; }      // e.g., 70.5 kg
+    
+    public string? BloodPressure { get; set; } // e.g., "120/80 mmHg"
+    public int? HeartRate { get; set; }      // e.g., 75 BPM
+
+    //Statistics
+
+    public List <double>? TemperatureStatics { get; set; } 
+    public List <double>? WeightStatics { get; set; }    
+
+    public List <string>? BloodPressureStatics { get; set; } 
+    public List <int>? HeartRateStatics { get; set; }      
+
+    public string? PatientInsuranceInfo { get; set; }
+    public string? MedicalHistory { get; set; }
     // Clinical Data
-    public List<string> Diagnoses { get; set; } = new();
-    public List<string> Medications { get; set; } = new();
-    public List<string> Allergies { get; set; } = new();
-    public List<string> LabResults { get; set; } = new();
-    public List<string> Immunizations { get; set; } = new();
-    public Dictionary<string, string> VitalSigns { get; set; } = new();
-    public string ClinicalNotes { get; set; }
+    public List<string>? Diagnoses { get; set; } = new();
+    public List<string>? Medications { get; set; } = new();
+    public List<string>? Allergies { get; set; } = new();
+    public List<string>? LabResults { get; set; } = new();
+    public List<string>? Immunizations { get; set; } = new();
+    /*public Dictionary<string, string> VitalSigns { get; set; } = new()*/
+   
     // Medical Imaging
-    public List<string> ImagingLinks { get; set; } = new();
+    public List<string>? ImagingLinks { get; set; } = new();
     // Treatment Plans
-    public string TreatmentPlans { get; set; }
+    public string? TreatmentPlans { get; set; } 
     // Procedures
-    public string ProcedureHistory { get; set; }
+    public List <string>? ProcedureHistory { get; set; }
     // Care Coordination
-    public string CareCoordinationInfo { get; set; }
+    public string?  CareCoordinationInfo { get; set; } 
     // Financial Information
-    public string FinancialInfo { get; set; }
-    // Consent and Legal Documents
-    public List<string> LegalDocuments { get; set; } = new();
-    // Patient Portal Access
-    public string PatientPortalAccess { get; set; }
-    // Reporting and Analytics
-    public string ReportingAndAnalytics { get; set; }
+    public List <string>? Billing  { get; set; }
+  
+   
+   
 }
