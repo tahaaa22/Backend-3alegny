@@ -412,13 +412,6 @@ namespace _3alegny.Service_layer
 
             return newBill.Id.ToString(); // Return the generated BillId
         }
-
-
-
-
-
-
-
         public class HospitalResult
         {
             public bool IsSuccess { get; set; }

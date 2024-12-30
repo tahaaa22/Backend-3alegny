@@ -2,6 +2,7 @@
 using _3alegny.RepoLayer;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using System.Linq;
 
 namespace _3alegny.Service_layer
 {
@@ -15,7 +16,7 @@ namespace _3alegny.Service_layer
         }
 
         // Create new order
-        public async Task<OrderResult<string>> CreateOrder(string patientId, string pharmacyId, OrderRequest neworder)
+        public async Task<OrderResult<Order>> CreateOrder(string patientId, string pharmacyId, OrderRequest neworder)
         {
             try
             {
@@ -24,12 +25,12 @@ namespace _3alegny.Service_layer
                 var patient = await _context.Patients.Find(p => p.Id == pid).FirstOrDefaultAsync();
                 if (patient == null)
                 {
-                    return new OrderResult<string> { IsSuccess = false, Message = "Patient not found" };
+                    return new OrderResult<Order> { IsSuccess = false, Message = "Patient not found" };
                 }
                 var oid = ObjectId.GenerateNewId();
                 var order = new Order
                 {
-                    OrderId = oid,
+                    Id = oid,
                     PatientId = patientId,
                     PharmacyId = pharmacyId,
                     //Adding the list of drugs to the order
@@ -53,17 +54,16 @@ namespace _3alegny.Service_layer
 
                     }
 
-
                 };
                 //Add the order to the orders collection and patient collection
                 await _context.Orders.InsertOneAsync(order);
                 patient.Orders.Add(order);
                 await _context.Patients.ReplaceOneAsync(h => h.Id == patient.Id, patient);
-                return new OrderResult<string> { IsSuccess = true, Message = "Order created successfully" };
+                return new OrderResult<Order> { IsSuccess = true, Data = order,Message = "Order created successfully" };
             }
             catch (Exception ex)
             {
-                return new OrderResult<string> { IsSuccess = false, Message = ex.Message };
+                return new OrderResult<Order> { IsSuccess = false, Message = ex.Message };
             }
         }
         // Get patient orders
@@ -120,9 +120,9 @@ namespace _3alegny.Service_layer
                 //Delete order by order id in patient orders list
                 foreach (var order in orders)
                 {
-                    if (order.OrderId == ObjectId.Parse(oid))
+                    if (order.Id == ObjectId.Parse(oid))
                         patient.Orders.Remove(order);
-                        await _context.Orders.DeleteOneAsync(o => o.OrderId == order.OrderId);
+                        await _context.Orders.DeleteOneAsync(o => o.Id == order.Id);
                 }
                 return new OrderResult<string> { IsSuccess = true, Message = "Orders cancelled successfully" };
             }
