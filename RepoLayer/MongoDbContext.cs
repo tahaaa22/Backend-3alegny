@@ -23,6 +23,8 @@ public class MongoDbContext : DbContext
     public IMongoCollection<Drugs> Drugs => _database.GetCollection<Drugs>("Drugs");
     public IMongoCollection<HospitalBilling> HospitalBills => _database.GetCollection<HospitalBilling>("HospitalBills");
 
+    public IMongoCollection<PharmacyBilling> PharmacyBills => _database.GetCollection<PharmacyBilling>("PharmcayBills");
+
 
 
     public MongoDbContext(string connectionString, string databaseName)

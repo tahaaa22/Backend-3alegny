@@ -195,6 +195,38 @@ namespace _3alegny.Service_layer
         }
 
 
+        public async Task<string> CreatePharmacyBill(PharmacyBilling bill)
+        {
+            // Validate input
+            if (string.IsNullOrEmpty(bill.PatientAddress))
+                throw new Exception("Patient Address is required.");
+
+            if (string.IsNullOrEmpty(bill.PharmacyName))
+                throw new Exception("Pharmacy Name is required.");
+
+            if (bill.DrugNames == null || bill.Quantities == null)
+                throw new Exception("Drugs data is incomplete.");
+
+            if (bill.DrugNames.Count != bill.Quantities.Count)
+                throw new Exception("Mismatch between DrugNames and DrugQuantities lists.");
+
+            // Calculate Total Price using the provided logic
+            bill.TotalPrice = (int)bill.DrugNames
+                .Select((drug, index) => bill.Quantities[index]* bill.DrugPrices[index]).Sum();
+
+            // Calculate Total Quantity
+            bill.TotalQuantity = bill.Quantities.Sum();
+
+            
+
+            // Insert the new bill into the PharmacyBills collection
+            await _context.PharmacyBills.InsertOneAsync(bill);
+
+            return bill.Id.ToString(); // Return the generated BillId
+        }
+
+
+
         public class PharmacyResult<T>
         {
             public bool IsSuccess { get; set; }
