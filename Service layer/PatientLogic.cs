@@ -16,7 +16,7 @@ namespace _3alegny.Service_layer
             _context = context;
         }
 
-        public async Task<PatientResult> GetPatientById(string id)
+        public async Task<PatientResult<Patient>> GetPatientById(string id)
         {
             try
             {
@@ -24,13 +24,13 @@ namespace _3alegny.Service_layer
                 var user = await _context.Patients.Find(u => u.Id == objectId).FirstOrDefaultAsync();
                 if (user == null)
                 {
-                    return new PatientResult { IsSuccess = false, Message = "patient not found." };
+                    return new PatientResult<Patient> { IsSuccess = false, Message = "patient not found." };
                 }
-                return new PatientResult { IsSuccess = true, Data = user, Message = $"patient with {id} valid" };
+                return new PatientResult<Patient> { IsSuccess = true, Data = user, Message = $"patient with {id} valid" };
             }
             catch (Exception ex)
             {
-                return new PatientResult { IsSuccess = false, Message = $"Error: {ex.Message}" };
+                return new PatientResult<Patient> { IsSuccess = false, Message = $"Error: {ex.Message}" };
             }
         }
 
@@ -150,13 +150,12 @@ namespace _3alegny.Service_layer
                 return new patientPHR<PHR> { IsSuccess = false, Message = $"Error: {e.Message}" };
             }
         }
-
     }
 }
 public class PatientResult
 {
     public bool IsSuccess { get; set; }
-    public Patient? Data { get; set; }
+    public T? Data { get; set; }
     public string? Role { get; set; }
     public required string Message { get; set; }
 }
@@ -164,6 +163,6 @@ public class PatientResult
 public class patientPHR<T> 
 {
     public bool IsSuccess { get; set; }
-    public string? Message { get; set; }
+    public string Message { get; set; }
     public T? Data { get; set; }
 }

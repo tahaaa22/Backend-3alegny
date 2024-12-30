@@ -94,7 +94,7 @@ public static class HospitalEndpoints
             OperationId = "DeleteDoctorById"
         });
 
-        app.MapPost("/Hospital/post-ehr", async (HospitalLogic logic, [FromBody] EHR ehr) =>
+        app.MapPost("/Hospital/post-ehr", async ([FromServices]  HospitalLogic logic, [FromBody] EHR ehr) =>
         {
             try
             {

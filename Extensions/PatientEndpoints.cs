@@ -1,16 +1,15 @@
-﻿using Microsoft.AspNetCore.Identity.Data;
-using _3alegny.Entities;
-using _3alegny.RepoLayer;
-using MongoDB.Bson;
-using MongoDB.Driver;
+﻿using _3alegny.Entities;
 using _3alegny.Service_layer;
+using Microsoft.AspNetCore.Mvc;
+using static AdminEndpoints;
+using static PatientEndpoints;
 public static class PatientEndpoints
 {
     public static void MapPatientEndpoints(this WebApplication app)
     {
         app.MapPost("/patient/newphr/{patientid}", (Func<string,phrRequest, PatientLogic, IResult>)((pid,request, logic) =>
         {
-            var result = logic.PostPHR(pid,request).Result;
+            var result = logic.PostPHR(request).Result;
             return result.IsSuccess ? Results.Ok(result.Message) : Results.BadRequest(result.Message);
         })).WithTags("Patient")
         .WithOpenApi(operation => new(operation)
@@ -21,7 +20,7 @@ public static class PatientEndpoints
         }
         );
 
-        app.MapPut("/patient/updatephr/{id}", (Func<string, phrRequest, PatientLogic, IResult>)((pid, request, logic) =>
+        app.MapPost("/patient/updatephr/{id}", (Func<string, phrRequest, PatientLogic, IResult>)((id, request, logic) =>
         {
             var result = logic.UpdatePHR(pid, request).Result;
             return result.IsSuccess ? Results.Ok(result.Message) : Results.BadRequest(result.Message);
@@ -34,6 +33,7 @@ public static class PatientEndpoints
         }
         );
 
+        // get patient PHR using patient ID
         app.MapGet("/patient/getphr/{id}", (Func<string, PatientLogic, IResult>)((id, logic) =>
         {
             var result = logic.GetPHR(id).Result;
@@ -61,7 +61,36 @@ public static class PatientEndpoints
             OperationId = "GETPatient",
         }
         );
+        // select all avaliable hospitals depends on the filters
+        app.MapPost("/patient/hospitals", async ([FromBody] HospitalFiltrationRequest<Hospital> request, [FromServices] PatientLogic logic) =>
+        {
+            var result = await logic.GetAvailableHospitals(request); 
+            return result.IsSuccess ? Results.Ok(result.Data) : Results.NotFound(result.Message);
+        }).WithTags("Patient");
+
+        app.MapGet("/patient/pharmacies", async ([FromServices] PatientLogic logic) =>
+        {
+            var result = await logic.GetAllPharmacies();
+            return Results.Ok(result);
+        }).WithTags("Patient")
+      .WithOpenApi(operation => new(operation)
+      {
+          Summary = "Get List of All pahrmacies",
+          Description = "this endpoint allow to get the list of all pharmacies",
+          OperationId = "GETpharmacies",
+      });
     }
+
+
+    public record HospitalFiltrationRequest <T>
+    (
+        string PatientId = "",
+        string price = "",
+        string street = "",
+        string department = "",
+        string rating = ""
+        );
+
     public record phrRequest(
         string Allergies,
         string ChronicIllness,

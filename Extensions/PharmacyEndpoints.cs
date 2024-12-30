@@ -59,5 +59,7 @@ public static class PharmacyEndpoints
             Description = "this endpoint allow to get the list of all drugs",
             OperationId = "GETDrugs",
         });
+
+       
     }
 }
