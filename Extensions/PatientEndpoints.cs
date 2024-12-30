@@ -2,6 +2,7 @@
 using _3alegny.Service_layer;
 using Microsoft.AspNetCore.Mvc;
 
+using Microsoft.AspNetCore.Mvc;
 public static class PatientEndpoints
 {
     public static void MapPatientEndpoints(this WebApplication app)
@@ -87,7 +88,7 @@ public static class PatientEndpoints
         });
 
         // select all avaliable hospitals depends on the filters
-        app.MapPost("/patient/hospitals", async ([FromBody] HospitalFiltrationRequest<Hospital> request, [FromServices] PatientLogic logic) =>
+        app.MapPost("/patient/filterhospitals", async ([FromBody] HospitalFiltrationRequest<Hospital> request, [FromServices] PatientLogic logic) =>
         {
             var result = await logic.GetAvailableHospitals(request);
             return result.IsSuccess ? Results.Ok(result.Data) : Results.NotFound(result.Message);
@@ -110,6 +111,19 @@ public static class PatientEndpoints
           Description = "this endpoint allow to get the list of all pharmacies",
           OperationId = "GETpharmacies",
       });
+
+
+        app.MapGet("/patient/Hospitals", async ([FromServices] PatientLogic logic) =>
+        {
+            var result = await logic.GetAllHospitals();
+            return Results.Ok(result);
+        }).WithTags("Patient")
+     .WithOpenApi(operation => new(operation)
+     {
+         Summary = "Get List of All Hospitals",
+         Description = "this endpoint allow to get the list of all Hospitals",
+         OperationId = "GETHospitals",
+     });
 
         //get all hospitals
         app.MapGet("/patient/department/{DepartmentId}/TopDoctor", async (string DepartmentId,string HospitalId, [FromServices] PatientLogic logic) =>

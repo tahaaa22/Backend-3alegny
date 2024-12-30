@@ -9,7 +9,7 @@ public static class OrderEndpoints
         app.MapPost("/order/create/{patientId}/{pharmacyId}", (Func<string, string, OrderRequest,OrdersLogic, IResult>)((pid, phid, request, logic) =>
         {
             var result = logic.CreateOrder(pid, phid, request).Result;
-            return result.IsSuccess ? Results.Ok(result.Message) : Results.BadRequest(result.Message);
+            return result.IsSuccess ? Results.Ok(result) : Results.BadRequest(result.Message);
         })).WithTags("Patient")
         .WithOpenApi(operation => new(operation)
         {
