@@ -176,25 +176,25 @@ public static class HospitalEndpoints
           );
 
 
-        app.MapPut("/Hospital/update/{hospitalId}", async ([FromServices] HospitalLogic logic, string hospitalId, [FromBody] Hospital updatedHospital) =>
-        {
-            try
-            {
-                var result = await logic.UpdateHospitalById(hospitalId, updatedHospital);
-                return Results.Ok(result);
-            }
-            catch (Exception e)
-            {
-                return Results.BadRequest(new { Success = false, Message = e.Message });
-            }
-        })
-.WithTags("Hospital")
-.WithOpenApi(operation => new(operation)
-{
-    Summary = "Update hospital by ID",
-    Description = "Updates a hospital's information based on its ID and returns the updated data.",
-    OperationId = "UpdateHospitalById"
-});
+        //app.MapPut("/Hospital/update/{hospitalId}", async ([FromServices] HospitalLogic logic, string hospitalId, [FromBody] Hospital updatedHospital) =>
+        //{
+        //    try
+        //    {
+        //        var result = await logic.UpdateHospitalById(hospitalId, updatedHospital);
+        //        return Results.Ok(result);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        return Results.BadRequest(new { Success = false, Message = e.Message });
+        //    }
+        //})
+        //    .WithTags("Hospital")
+        //    .WithOpenApi(operation => new(operation)
+        //    {
+        //        Summary = "Update hospital by ID",
+        //        Description = "Updates a hospital's information based on its ID and returns the updated data.",
+        //        OperationId = "UpdateHospitalById"
+        //    });
 
 
 
@@ -202,6 +202,15 @@ public static class HospitalEndpoints
 
 
     }
+
+
+     public record HospitalRequest
+        (
+
+         
+         );
+
+
     public record DoctorResponse(
     string? Id,
     string Name,

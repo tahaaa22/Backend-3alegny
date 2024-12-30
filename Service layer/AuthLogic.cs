@@ -59,6 +59,7 @@ namespace _3alegny.Service_layer
             {
                 IsSuccess = true,
                 UserName = user.UserName,
+                address = user.Address,
                 ID = user.Id.ToString(),
                 Role = user.Role.ToString(),
                 Message = "User login succeeded."
@@ -92,6 +93,7 @@ namespace _3alegny.Service_layer
             {
                 IsSuccess = true,
                 UserName = user.UserName,
+                address = user.Address,
                 ID = user.Id.ToString(),
                 Role = user.Role.ToString(),
                 Message = "User login succeeded."
@@ -115,6 +117,7 @@ namespace _3alegny.Service_layer
         {
             public bool IsSuccess { get; set; }
             public string? UserName { get; set; }
+            public Address? address { get; set; }  
             public string? ID { get; set; }
             public string? Role { get; set; }
             public string Message { get; set; }
@@ -123,6 +126,7 @@ namespace _3alegny.Service_layer
         {
             public bool IsSuccess { get; set; }
             public string? UserName { get; set; }
+            public Address? address { get; set; }
             public string? ID { get; set; }
             public string? Role { get; set; }
             public string Message { get; set; }
