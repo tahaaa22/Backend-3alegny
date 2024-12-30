@@ -4,6 +4,8 @@ using _3alegny.Entities;
 using _3alegny.RepoLayer;
 using static PatientEndpoints;
 using System.CodeDom.Compiler;
+using static _3alegny.Service_layer.HospitalLogic;
+using System.Numerics;
 
 namespace _3alegny.Service_layer
 {
@@ -102,6 +104,48 @@ namespace _3alegny.Service_layer
             catch (Exception ex)
             {
                 return new PatientResult<Patient> { IsSuccess = false, Message = $"Error: {ex.Message}" };
+            }
+        }
+
+
+
+        //get the top doctor in the current department
+        public async Task<Doctors> GetTopDoctor(string departmentId, string hospitalId)
+        {
+            try
+            {
+                var hospitalObjectId = new ObjectId(hospitalId);
+                var departmentObjectId = new ObjectId(departmentId);
+
+                // Find the hospital that contains the department
+                var hospital = await _context.Hospitals
+                    .Find(h => h.Id == hospitalObjectId && h.Departments.Any(d => d.Id == departmentObjectId))
+                    .FirstOrDefaultAsync();
+
+                if (hospital == null)
+                {
+                    throw new Exception($"Hospital with ID {hospitalId} not found or department missing.");
+                }
+
+                // Retrieve the department
+                var department = hospital.Departments.FirstOrDefault(d => d.Id == departmentObjectId);
+                if (department == null)
+                {
+                    return null; // No matching department found
+                }
+
+                // Find top doctor in the department
+                var topDoctor = hospital.Doctors
+                    .Where(d => d.Specialty == department.Name) // Match specialty to department name
+                    .OrderByDescending(d => d.Rating)           // Assuming "Rating" is a property of Doctor
+                    .FirstOrDefault();
+
+                return topDoctor; // Return the top doctor or null if none found
+            }
+            catch (Exception ex)
+            {
+                // Log or handle the exception
+                throw new Exception($"Error occurred while retrieving the top doctor: {ex.Message}");
             }
         }
 

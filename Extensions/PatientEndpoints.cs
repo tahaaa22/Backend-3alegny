@@ -110,6 +110,19 @@ public static class PatientEndpoints
           Description = "this endpoint allow to get the list of all pharmacies",
           OperationId = "GETpharmacies",
       });
+
+        //get all hospitals
+        app.MapGet("/patient/department/{DepartmentId}/TopDoctor", async (string DepartmentId,string HospitalId, [FromServices] PatientLogic logic) =>
+        {
+            var result = await logic.GetTopDoctor(DepartmentId, HospitalId);
+            return Results.Ok(result);
+        }).WithTags("Patient")
+        .WithOpenApi(operation => new(operation)
+        {
+            Summary = "Get the top doctor in the current department",
+            Description = "this endpoint allow to get the top doctor in the current department",
+            OperationId = "GETtopDoctors",
+        });
     }
 
 
