@@ -75,36 +75,36 @@ public static class PatientEndpoints
         });
 
         //Get Followup requests for a patient
-        //app.MapGet("/patient/followup/{id}", (Func<string, PatientLogic, IResult>)((id, logic) =>
-        //{
-        //    var result = logic.GetFollowUp(id).Result;
-        //    return Results.Ok(result);
-        //})).WithTags("Patient")
-        //.WithOpenApi(operation => new(operation)
-        //{
-        //    Summary = "Get Followup requests",
-        //    Description = "This endpoint allows patients to get their followup requests.",
-        //    OperationId = "GetFollowup",
-        //});
+        app.MapGet("/patient/followup/{id}", (Func<string, PatientLogic, IResult>)((id, logic) =>
+        {
+            var result = logic.GetFollowUp(id).Result;
+            return Results.Ok(result);
+        })).WithTags("Patient")
+        .WithOpenApi(operation => new(operation)
+        {
+            Summary = "Get Followup requests",
+            Description = "This endpoint allows patients to get their followup requests.",
+            OperationId = "GetFollowup",
+        });
 
         // select all avaliable hospitals depends on the filters
-        app.MapPost("/patient/hospitals", async ([FromBody] HospitalFiltrationRequest<Hospital> request, [FromServices] PatientLogic logic) =>
-        {
-            var result = await logic.GetAvailableHospitals(request); 
-            return result.IsSuccess ? Results.Ok(result.Data) : Results.NotFound(result.Message);
-        }).WithTags("Patient");
+        //  app.MapPost("/patient/hospitals", async ([FromBody] HospitalFiltrationRequest<Hospital> request, [FromServices] PatientLogic logic) =>
+        //  {
+        //      var result = await logic.GetAvailableHospitals(request); 
+        //      return result.IsSuccess ? Results.Ok(result.Data) : Results.NotFound(result.Message);
+        //  }).WithTags("Patient");
 
-        app.MapGet("/patient/pharmacies", async ([FromServices] PatientLogic logic) =>
-        {
-            var result = await logic.GetAllPharmacies();
-            return Results.Ok(result);
-        }).WithTags("Patient")
-      .WithOpenApi(operation => new(operation)
-      {
-          Summary = "Get List of All pahrmacies",
-          Description = "this endpoint allow to get the list of all pharmacies",
-          OperationId = "GETpharmacies",
-      });
+        //  app.MapGet("/patient/pharmacies", async ([FromServices] PatientLogic logic) =>
+        //  {
+        //      var result = await logic.GetAllPharmacies();
+        //      return Results.Ok(result);
+        //  }).WithTags("Patient")
+        //.WithOpenApi(operation => new(operation)
+        //{
+        //    Summary = "Get List of All pahrmacies",
+        //    Description = "this endpoint allow to get the list of all pharmacies",
+        //    OperationId = "GETpharmacies",
+        //});
     }
 
 
