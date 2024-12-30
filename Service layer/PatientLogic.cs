@@ -240,6 +240,24 @@ namespace _3alegny.Service_layer
             }
         }
 
+
+        public async Task<AdminResult<List<Hospital>>> GetAllHospitals()
+        {
+            try
+            {
+                var hospital = await _context.Hospitals.Find(_ => true).ToListAsync();
+                if (hospital == null || !hospital.Any())
+                {
+                    return new AdminResult<List<Hospital>> { IsSuccess = false, Message = "No Patients found." };
+                }
+                return new AdminResult<List<Hospital>> { IsSuccess = true, Data = hospital, Message = "all users returned" };
+            }
+            catch (Exception ex)
+            {
+                return new AdminResult<List<Hospital>> { IsSuccess = false, Message = $"Error: {ex.Message}" };
+            }
+        }
+
         // Get Followup for patient
         public async Task<FollowUpResult<List<FollowUp>>> GetFollowUp(string id)
         {
