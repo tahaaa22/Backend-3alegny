@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using _3alegny.Service_layer;
 using _3alegny.Entities;
 using Microsoft.AspNetCore.Mvc;
+using static _3alegny.Service_layer.HospitalLogic;
 
 public static class HospitalEndpoints
 {
@@ -29,48 +30,49 @@ public static class HospitalEndpoints
             OperationId = "AddDepartment"
         });
 
-        // POST endpoint to add a new doctor
-        app.MapPost("/Hospital/add-doctor", async ([FromServices] HospitalLogic logic, [FromBody] Doctors doctor) =>
+        app.MapPost("/Hospital/add-doctor", async ([FromServices] HospitalLogic logic, [FromBody] DoctorResponse doctor) =>
         {
             try
             {
-                var result = await logic.AddDoctor(doctor);
-                return Results.Ok(new { Success = true, Message = result, DoctorId = doctor.Id });
+                var response = await logic.AddDoctor(doctor);
+                return Results.Ok(response);
             }
             catch (Exception e)
             {
                 return Results.BadRequest(new { Success = false, Message = e.Message });
             }
         })
-        .WithTags("Hospital")
-        .WithOpenApi(operation => new(operation)
-        {
-            Summary = "Add a new doctor",
-            Description = "Adds a new doctor to a hospital.",
-            OperationId = "AddDoctor"
-        });
+.WithTags("Hospital")
+.WithOpenApi(operation => new(operation)
+{
+    Summary = "Add a new doctor",
+    Description = "Adds a new doctor to a hospital.",
+    OperationId = "AddDoctor"
+});
 
 
-        // PUT endpoint to retrieve and update a doctor by ID
-        app.MapPut("/Hospital/upsert-doctor/{doctorId}", async ([FromServices] HospitalLogic logic, string doctorId, [FromBody] Doctors updatedDoctor) =>
-        {
-            try
-            {
-                var result = await logic.UpdateDoctorById(doctorId, updatedDoctor);
-                return Results.Ok(new { Success = true, Message = result });
-            }
-            catch (Exception e)
-            {
-                return Results.BadRequest(new { Success = false, Message = e.Message });
-            }
-        })
-        .WithTags("Hospital")
-        .WithOpenApi(operation => new(operation)
-        {
-            Summary = "Get and update doctor by ID",
-            Description = "Fetches a doctor's details based on their ID and allows updating those details.",
-            OperationId = "UpsertDoctorById"
-        });
+
+
+//        app.MapPut("/Hospital/upsert-doctor/{doctorId}", async ([FromServices] HospitalLogic logic, string doctorId, [FromBody] record UpdatedDoctor) =>
+//        {
+//            try
+//            {
+//                var response = await logic.UpdateDoctorById(doctorId, UpdatedDoctor);
+//                return Results.Ok(response);
+//            }
+//            catch (Exception e)
+//            {
+//                return Results.BadRequest(new { Success = false, Message = e.Message });
+//            }
+//        })
+//.WithTags("Hospital")
+//.WithOpenApi(operation => new(operation)
+//{
+//    Summary = "Get and update doctor by ID",
+//    Description = "Fetches a doctor's details based on their ID and allows updating those details.",
+//    OperationId = "UpsertDoctorById"
+//});
+
 
 
         // DELETE endpoint to remove a doctor by ID
@@ -116,25 +118,25 @@ public static class HospitalEndpoints
 
         //FIXME: hospital do not have auth to get request EHR
 
-        //app.MapGet("/get-ehr/{ehrId}", async ([FromServices] HospitalLogic logic, string ehrId) =>
-        //{
-        //    try
-        //    {
-        //        var ehr = await logic.GetEHRById(ehrId);
-        //        return Results.Ok(new { Success = true, Data = ehr });
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        return Results.BadRequest(new { Success = false, Message = e.Message });
-        //    }
-        //})
-        //    .WithTags("Hospital")
-        //    .WithOpenApi(operation => new(operation)
-        //    {
-        //        Summary = "Get EHR by ID",
-        //        Description = "Retrieves an EHR document by its ID.",
-        //        OperationId = "GetEHRById"
-        //    });
+        app.MapPut("/Hospital/update-doctor/{doctorId}", async ([FromServices] HospitalLogic logic, string doctorId, [FromBody] UpdateDoctorRequest updatedDoctor) =>
+        {
+            try
+            {
+                var response = await logic.UpdateDoctorById(doctorId, updatedDoctor);
+                return Results.Ok(response);
+            }
+            catch (Exception e)
+            {
+                return Results.BadRequest(new { Success = false, Message = e.Message });
+            }
+        })
+.WithTags("Hospital")
+.WithOpenApi(operation => new(operation)
+{
+    Summary = "Update doctor details",
+    Description = "Updates a doctor's details based on their ID.",
+    OperationId = "UpdateDoctorById"
+});
 
 
         // PUT endpoint to update an EHR by ID
@@ -174,7 +176,55 @@ public static class HospitalEndpoints
           );
 
 
+        app.MapPut("/Hospital/update-hospital/{id}", async ([FromServices] HospitalLogic logic, string id, [FromBody] Hospital updatedHospital) =>
+        {
+            try
+            {
+                var result = await logic.UpdateHospitalById(id, updatedHospital);
+                return Results.Ok(new { Success = true, Message = result });
+            }
+            catch (Exception e)
+            {
+                return Results.BadRequest(new { Success = false, Message = e.Message });
+            }
+        });
+
+
 
     }
+    public record DoctorResponse(
+    string? Id,
+    string Name,
+    string Specialty,
+    string HospitalId,
+    string License,
+    string Description,
+    string city,
+    string state,
+    string zipcode,
+    string street,
+    int AppointmentFee,
+    string ImageUrl,
+    List<DateTime>? AvailableSlots);
+
+    public record UpdateDoctorRequest
+    {
+        public string Name { get; set; }
+        public string Specialty { get; set; }
+        public string License { get; set; }
+        public string Description { get; set; }
+        public string City { get; set; }
+        public string State { get; set; }
+        public string Zipcode { get; set; }
+        public string Street { get; set; }
+        public string? Reviews { get; set; }
+        public Double Rating { get; set; }
+        public int AppointmentFee { get; set; }
+        public string ImageUrl { get; set; }
+        public List<DateTime> AvailableSlots { get; set; }
+        public List<DateTime> RegisteredSlots { get; set; }
+    }
+
+
 }
 

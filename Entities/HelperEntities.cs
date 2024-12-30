@@ -60,16 +60,21 @@ namespace _3alegny.Entities
         public ObjectId Id { get; set; }
         public string Name { get; set; }
         public string Specialty { get; set; }
-        public string HospitalId { get; set; }
+        public string HospitalId { get; set; } 
         public string? License { get; set; }
-        public string? Hospital { get; set; }
+        public string? Hospital { get; set; } //neglect in add doctor respose  and in update  response
         public string? Description { get; set; }
-        public Address Address { get; set; }
-        public string? Schedule { get; set; } // FIXME: not needed
-        public string? Reviews { get; set; }
-        public Double Rating { get; set; }
+        
+        public Address address { get; set; }
+
+
+        public string? Reviews { get; set; } //neglect in add doctor response 
+        public Double Rating { get; set; } //neglect in response in add doctor response
         public int AppointmentFee { get; set; }
 
-        public string ImageUrl { get; set; } // Add image URL property
+        public string ImageUrl { get; set; } // Add image URL property 
+
+        public List<DateTime> AvailableSlots { get; set; } = new List<DateTime>(); 
+        public List<DateTime> RegisteredSlots { get; set; } = new List<DateTime>(); //neglect it in add doctor response 
     }
 }
