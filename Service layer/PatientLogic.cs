@@ -300,20 +300,60 @@ namespace _3alegny.Service_layer
         }
 
 
-        public async Task<AdminResult<List<Hospital>>> GetAllHospitals()
+        public async Task<AdminResult<List<AllhospitalResponse>>> GetAllHospitals()
         {
             try
             {
-                var hospital = await _context.Hospitals.Find(_ => true).ToListAsync();
-                if (hospital == null || !hospital.Any())
+                
+                var hospitals = await _context.Hospitals.Find(_ => true).ToListAsync();
+                if (!hospitals.Any())
                 {
-                    return new AdminResult<List<Hospital>> { IsSuccess = false, Message = "No Patients found." };
+                    return new AdminResult<List<AllhospitalResponse>>
+                    {
+                        IsSuccess = false,
+                        Message = "No hospitals found."
+                    };
                 }
-                return new AdminResult<List<Hospital>> { IsSuccess = true, Data = hospital, Message = "all users returned" };
+
+                var listHospitals = new List<AllhospitalResponse>();   
+                
+                // Convert each Department's Id to a string
+                foreach (var hospital in hospitals)
+                {
+                    var holder = new AllhospitalResponse();
+                    holder.HospitalId = hospital.Id.ToString();
+                    holder.Name = hospital.Name;
+                    holder.contactInfo = hospital.contactInfo;
+                    holder.Address = hospital.Address;  
+                    holder.ImageUrl = hospital.ImageUrl;
+                    holder.Address = hospital.Address;
+                    holder.Appointments = hospital.Appointments;
+                    holder.Rating = hospital.Rating;
+                    holder.Doctors = hospital.Doctors;
+                    holder.InsuranceAccepted = hospital.InsuranceAccepted;
+                    foreach (var department in hospital.Departments)
+                    {
+                        holder.departmentId = department.Id.ToString(); // Change Id to string
+                        holder.departmentName = department.Name;
+                        holder.AppointmentFee = department.AppointmentFee;
+                    }
+                    listHospitals.Add(holder);
+                }
+    
+                return new AdminResult<List<AllhospitalResponse>>
+                {
+                    IsSuccess = true,
+                    Data = listHospitals,
+                    Message = "All hospitals returned successfully."
+                };
             }
             catch (Exception ex)
             {
-                return new AdminResult<List<Hospital>> { IsSuccess = false, Message = $"Error: {ex.Message}" };
+                return new AdminResult<List<AllhospitalResponse>>
+                {
+                    IsSuccess = false,
+                    Message = $"An error occurred: {ex.Message}"
+                };
             }
         }
 
@@ -502,4 +542,23 @@ public class FilteredHospitalResponse
     public string? Role { get; set; }
     public required string Message { get; set; }
 
+}
+
+
+public class AllhospitalResponse
+{
+    public string HospitalId { get; set; }
+    public string? Name { get; set; }
+    public string? UserName { get; set; }
+    public ContactInfo? contactInfo { get; set; }
+    public Address? Address { get; set; }
+    public string ImageUrl { get; set; } // Add image URL property
+    public string departmentId { get; set; }
+    public string departmentName { get; set; }
+
+    public int AppointmentFee { get; set; } = 0;
+    public List<Appointments> Appointments { get; set; } = new List<Appointments>();
+    public Double? Rating { get; set; } = 0.0;
+    public List<Doctors> Doctors { get; set; } = new List<Doctors>();
+    public List<Insurance> InsuranceAccepted { get; set; } = new List<Insurance>();
 }
