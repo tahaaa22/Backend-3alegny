@@ -186,7 +186,7 @@ public static class HospitalEndpoints
                 Description = "This endpoint allows hospitals to add a follow-up for a patient.",
                 OperationId = "AddFollowUp",
             });
-        
+
 
 
         //app.MapPut("/Hospital/update/{hospitalId}", async ([FromServices] HospitalLogic logic, string hospitalId, [FromBody] Hospital updatedHospital) =>
@@ -209,6 +209,26 @@ public static class HospitalEndpoints
         //        OperationId = "UpdateHospitalById"
         //    });
 
+        app.MapPost("/Hospital/create-bill", async ([FromServices] HospitalLogic logic, [FromBody] HospitalBilling bill) =>
+        {
+            try
+            {
+                // Create the bill using the logic method
+                var result = await logic.CreateHospitalBill(bill);
+                return Results.Ok(new { Success = true, Message = "Bill created successfully", BillId = result });
+            }
+            catch (Exception e)
+            {
+                return Results.BadRequest(new { Success = false, Message = e.Message });
+            }
+        })
+   .WithTags("Hospital")
+   .WithOpenApi(operation => new(operation)
+   {
+       Summary = "Create a new hospital bill",
+       Description = "Creates a billing record for a patient, including doctor details, appointment fee, and insurance information.",
+       OperationId = "CreateHospitalBill"
+   });
 
         app.MapGet("/Hospital/get-ehr/{ehrId}", async ([FromServices] HospitalLogic logic, string ehrId) =>
         {

@@ -387,8 +387,35 @@ namespace _3alegny.Service_layer
         //    };
         //}
 
+        public async Task<string> CreateHospitalBill(HospitalBilling bill)
+        {
+            if (string.IsNullOrEmpty(bill.PatientId))
+                throw new Exception("Patient ID is required.");
 
-       
+            if (string.IsNullOrEmpty(bill.DoctorID))
+                throw new Exception("Doctor ID is required.");
+
+            // Assuming MongoDB auto-generates ObjectId for the BillId
+            var newBill = new HospitalBilling
+            {
+                PatientId = bill.PatientId,
+                PatientName = bill.PatientName,
+                DoctorID = bill.DoctorID,
+                DoctorName = bill.DoctorName,
+                DepartmentName = bill.DepartmentName,
+                AppointmentFee = bill.AppointmentFee,
+                InsuranceDetails = bill.InsuranceDetails
+            };
+
+            // Insert the new bill into the HospitalBills collection
+            await _context.HospitalBills.InsertOneAsync(newBill);
+
+            return newBill.Id.ToString(); // Return the generated BillId
+        }
+
+
+
+
 
 
 
