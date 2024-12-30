@@ -238,26 +238,7 @@ namespace _3alegny.Service_layer
             return "EHR created successfully";
         }
 
-        public async Task<string> UpdateHospitalById(string hospitalId, Hospital updatedHospital)
-        {
-            // Validate if the provided hospitalId is a valid ObjectId
-            if (!ObjectId.TryParse(hospitalId, out _))
-                throw new Exception("Invalid Hospital ID");
-
-            // Ensure the updated Hospital keeps the original ID
-            updatedHospital.Id = ObjectId.Parse(hospitalId);
-
-            // Replace the existing Hospital document with the updated one
-            var result = await _context.Hospitals.ReplaceOneAsync(
-                e => e.Id == ObjectId.Parse(hospitalId),
-                updatedHospital
-            );
-
-            if (result.MatchedCount == 0)
-                throw new Exception("Hospital not found");
-
-            return "Hospital updated successfully.";
-        }
+       
         public async Task<EHR> GetEHRById(string ehrId)
         {
             // Validate if the provided ehrId is a valid ObjectId
@@ -314,6 +295,39 @@ namespace _3alegny.Service_layer
                 return new HospitalResult { IsSuccess = false, Message = $"Error: {ex.Message}" };
             }
         }
+
+        public async Task<object> UpdateHospitalById(string hospitalId, Hospital updatedHospital)
+        {
+            // Validate hospital ID
+            if (!ObjectId.TryParse(hospitalId, out _))
+                throw new Exception("Invalid hospital ID");
+
+            // Fetch the hospital by ID
+            var hospital = await _context.Hospitals.Find(h => h.Id.ToString() == hospitalId).FirstOrDefaultAsync();
+            if (hospital == null)
+                throw new Exception("Hospital not found");
+
+            // Update hospital fields
+            hospital.Name = updatedHospital.Name ?? hospital.Name;
+            hospital.Address = updatedHospital.Address ?? hospital.Address;
+            hospital.Departments = updatedHospital.Departments ?? hospital.Departments;
+            hospital.EHRs = updatedHospital.EHRs ?? hospital.EHRs;
+            hospital.Appointments = updatedHospital.Appointments ?? hospital.Appointments;
+            hospital.Doctors = updatedHospital.Doctors ?? hospital.Doctors;
+            hospital.Rating = updatedHospital.Rating ?? hospital.Rating;
+            hospital.InsuranceAccepted = updatedHospital.InsuranceAccepted ?? hospital.InsuranceAccepted;
+
+            // Save the updated hospital back to the database
+            await _context.Hospitals.ReplaceOneAsync(h => h.Id == hospital.Id, hospital);
+
+            return new
+            {
+                Success = true,
+                Message = "Hospital updated successfully",
+                UpdatedHospital = hospital
+            };
+        }
+
 
 
         public class HospitalResult
