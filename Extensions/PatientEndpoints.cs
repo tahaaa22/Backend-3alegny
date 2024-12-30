@@ -1,5 +1,6 @@
 ﻿using _3alegny.Entities;
 using _3alegny.Service_layer;
+using Microsoft.AspNetCore.Mvc;
 
 public static class PatientEndpoints
 {

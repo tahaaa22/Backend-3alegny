@@ -293,8 +293,8 @@ namespace _3alegny.Service_layer
                 { 
                         var finalFilteredHospitals = hospitals.FindAll(h =>
                             h.Departments.Any(d =>
-                                d.AvaliableDoctors != null &&
-                                d.AppointmentFee <= FilteredHospital.price));
+                                d.AvaliableDoctors != null) &&
+                                h.Departments.Any(d => d.AppointmentFee <= FilteredHospital.price));
 
                   if(finalFilteredHospitals == null || !finalFilteredHospitals.Any())
                     return new PatientResult<List<Hospital>>
