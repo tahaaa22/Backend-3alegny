@@ -58,7 +58,7 @@ namespace _3alegny.Entities
         public float Height { get; set; }
         public float Weight { get; set; }
         public EHR EHR { get; set; }
-
+        public PHR PHR { get; set; }
 
 
 
