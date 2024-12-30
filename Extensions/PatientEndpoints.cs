@@ -1,5 +1,6 @@
 ﻿using _3alegny.Entities;
 using _3alegny.Service_layer;
+using Microsoft.AspNetCore.Mvc;
 
 using Microsoft.AspNetCore.Mvc;
 public static class PatientEndpoints
@@ -91,7 +92,13 @@ public static class PatientEndpoints
         {
             var result = await logic.GetAvailableHospitals(request);
             return result.IsSuccess ? Results.Ok(result.Data) : Results.NotFound(result.Message);
-        }).WithTags("Patient");
+        }).WithTags("Patient")
+        .WithOpenApi(operation => new(operation)
+         {
+             Summary = "Get List of All hospitals",
+             Description = "this endpoint allow to get the list of all hospitals",
+             OperationId = "GEThospitals",
+         });
 
         app.MapGet("/patient/pharmacies", async ([FromServices] PatientLogic logic) =>
         {
@@ -110,7 +117,7 @@ public static class PatientEndpoints
     public record HospitalFiltrationRequest <T>
     (
         string PatientId = "",
-        string price = "",
+        int price = 0,
         string street = "",
         string department = "",
         string rating = ""

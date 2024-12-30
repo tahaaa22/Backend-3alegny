@@ -35,7 +35,7 @@ namespace _3alegny.Service_layer
         }
 
         // Update patient info by ID
-        public async Task<PatientResult<PatientUpdateRequest>> UpdatePatient(string id, PatientUpdateRequest patient)
+        public async Task<PatientResult<Patient>> UpdatePatient(string id, PatientUpdateRequest patient)
         {
             try
             {
@@ -51,18 +51,57 @@ namespace _3alegny.Service_layer
                         .Set(p => p.Address.City, patient.City)
                         .Set(p => p.Address.State, patient.State)
                         .Set(p => p.Address.ZipCode, patient.ZipCode)
-                        .Set(p => p.ImageUrl, patient.imageUrl)
-                        .AddToSet(p => p.Insurance, new Insurance { providerName = patient.InsuranceName })
+                        .Set(p => p.ImageUrl, patient.imageUrl));
+                var patientRecord = await _context.Patients.Find(u => u.Id == objectId).FirstOrDefaultAsync();
 
+                if (patientRecord.Insurance != null)
+                {
+                    var existingInsurance = patientRecord.Insurance.FirstOrDefault(ins => ins.providerName == patient.InsuranceName);
+
+                    if (existingInsurance != null)
+                    {
+                        return new PatientResult<Patient> { IsSuccess = false, Message = "insurance providerName already exists" };
+                    }
+                    else
+                    {
+                        // Add new insurance record
+                        var newInsurance = new Insurance
+                        {
+                            Id = ObjectId.GenerateNewId(),
+                            providerName = patient.InsuranceName
+                        };
+
+                        patientRecord.Insurance.Add(newInsurance);
+                    }
+
+                    // Update the patient's insurance list in the database
+                    var updateInsuranceResult = await _context.Patients.UpdateOneAsync(
+                        u => u.Id == objectId,
+                        Builders<Patient>.Update.Set(p => p.Insurance, patientRecord.Insurance)
                     );
-                return updateResult.ModifiedCount == 0
-                    ? new PatientResult<PatientUpdateRequest> { IsSuccess = false, Message = "Patient update failed." }
-                    : new PatientResult<PatientUpdateRequest> { IsSuccess = true, Message = "Patient updated successfully." };
+                }
+                else
+                {
+                    var InsuranceList = new List<Insurance>();
+                    var insurance = new Insurance { Id = ObjectId.GenerateNewId(), providerName = patient.InsuranceName };
+                    InsuranceList.Add(insurance);
+                    var updateInsuranceResult = await _context.Patients.UpdateOneAsync(
+                        u => u.Id == objectId,
+                        Builders<Patient>.Update.Set(p => p.Insurance, InsuranceList)
+                    );
+                    return new PatientResult<Patient> { IsSuccess = true, Message = "Patient updated successfully." };
+
+                }
+
+
+                    return updateResult.ModifiedCount == 0
+                    ? new PatientResult<Patient> { IsSuccess = false, Message = "Patient update failed." }
+                    : new PatientResult<Patient> { IsSuccess = true, Message = "Patient updated successfully." };
 
             }
             catch (Exception ex)
             {
-                return new PatientResult<PatientUpdateRequest> { IsSuccess = false, Message = $"Error: {ex.Message}" };
+                return new PatientResult<Patient> { IsSuccess = false, Message = $"Error: {ex.Message}" };
             }
         }
 
@@ -245,12 +284,6 @@ namespace _3alegny.Service_layer
 
         }
 
-        public string? address { get; set; }
-        public string? rating { get; set; }
-        public string? department { get; set; }
-        public string? price { get; set; }
-        public string? Role { get; set; }
-        public required string Message { get; set; }
 
         public async Task<PatientResult<List<Hospital>>> GetAvailableHospitals(HospitalFiltrationRequest<Hospital> FilteredHospital)
         {
@@ -295,23 +328,20 @@ namespace _3alegny.Service_layer
                     hospitals = hospitals.FindAll(h => h.Departments.Any(d => d.Name == FilteredHospital.department));
                 }
 
-                if (!string.IsNullOrEmpty(FilteredHospital.price) && FilteredHospital.price != "string")
-                {
-                    if (int.TryParse(FilteredHospital.price, out int maxPrice))
-                    {
-                        hospitals = hospitals.FindAll(h =>
+                if (FilteredHospital.price != 0)
+                { 
+                        var finalFilteredHospitals = hospitals.FindAll(h =>
                             h.Departments.Any(d =>
-                                d.AvaliableDoctors != null &&
-                                d.AvaliableDoctors.Any(doc => doc.AppointmentFee <= maxPrice)));
-                    }
-                    else
+                                d.AvaliableDoctors != null) &&
+                                h.Departments.Any(d => d.AppointmentFee <= FilteredHospital.price));
+
+                  if(finalFilteredHospitals == null || !finalFilteredHospitals.Any())
+                    return new PatientResult<List<Hospital>>
                     {
-                        return new PatientResult<List<Hospital>>
-                        {
-                            IsSuccess = false,
-                            Message = "Invalid price value."
-                        };
-                    }
+                        IsSuccess = false,
+                        Message = "Invalid price value."
+                    };
+                
                 }
 
                 // Final check for results

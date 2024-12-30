@@ -10,11 +10,11 @@ public static class HospitalEndpoints
     public static void MapHospitalEndpoints(this WebApplication app)
     {
         // POST endpoint to add a new department
-        app.MapPost("/Hospital/add-department", async ([FromServices] HospitalLogic logic, string hospitalId, string departmentName) =>
+        app.MapPost("/Hospital/add-department", async ([FromServices] HospitalLogic logic, string hospitalId, string departmentName, int AppointmentFee) =>
         {
             try
             {
-                var result = await logic.AddDepartment(hospitalId, departmentName);
+                var result = await logic.AddDepartment(hospitalId, departmentName, AppointmentFee);
                 return Results.Ok(new { Success = true, Message = result });
             }
             catch (Exception e)
