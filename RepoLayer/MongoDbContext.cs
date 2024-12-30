@@ -23,6 +23,7 @@ public class MongoDbContext : DbContext
     public IMongoCollection<Drugs> Drugs => _database.GetCollection<Drugs>("Drugs");
 
 
+
     public MongoDbContext(string connectionString, string databaseName)
     {
         var client = new MongoClient(connectionString);
