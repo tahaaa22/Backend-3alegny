@@ -85,9 +85,9 @@ public static class AppointmentEndpoints
         });
 
         // Get all appointments for a specific hospital
-        app.MapGet("/appointment/hospital/{id}", (Func<string, AppointmentLogic, IResult>)((id, logic) =>
+        app.MapGet("/appointment/hospital/{id}", (Func<string, AppointmentLogic, IResult>)((hid, logic) =>
         {
-            var result = logic.GetHospitalAppointments(id).Result;
+            var result = logic.GetHospitalAppointments(hid).Result;
             return Results.Ok(result);
         })).WithTags("Admin")
         .WithOpenApi(operation => new(operation)
@@ -122,7 +122,6 @@ public static class AppointmentEndpoints
         public string HospitalName { get; set; }
         public string PHRId { get; set; }
 
-        
 
     }
 }

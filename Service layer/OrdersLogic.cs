@@ -16,6 +16,7 @@ namespace _3alegny.Service_layer
         }
 
         // Create new order
+        // Create new order
         public async Task<OrderResult<Order>> CreateOrder(string patientId, string pharmacyId, OrderRequest neworder)
         {
             try
@@ -44,8 +45,8 @@ namespace _3alegny.Service_layer
                         ZipCode = neworder.zipcode,
                     }
                 };
-                    var drug = new Drugs { Id = ObjectId.GenerateNewId(), Name = neworder.Drug, Category = neworder.DrugCategory , Quantity= neworder.DrugQuantity};
-                    order.Drugs.Add(drug);
+                var drug = new Drugs { Id = ObjectId.GenerateNewId(), Name = neworder.Drug, Category = neworder.DrugCategory, Quantity = neworder.DrugQuantity };
+                order.Drugs.Add(drug);
 
                 var pharmacy = await _context.Pharmacies.Find(p => p.Id.ToString() == pharmacyId).FirstOrDefaultAsync();
                 if (pharmacy == null)
@@ -56,12 +57,12 @@ namespace _3alegny.Service_layer
                 //Add the order to the orders collection and patient collection
                 await _context.Orders.InsertOneAsync(order);
                 patient.Orders.Add(order);
-                
+
                 pharmacy.Orders.Add(order);
                 await _context.Pharmacies.ReplaceOneAsync(p => p.Id.ToString() == pharmacyId, pharmacy);
 
                 await _context.Patients.ReplaceOneAsync(h => h.Id == patient.Id, patient);
-                return new OrderResult<Order> { IsSuccess = true, Data = order,Message = "Order created successfully" };
+                return new OrderResult<Order> { IsSuccess = true, Data = order, Message = "Order created successfully" };
             }
             catch (Exception ex)
             {
@@ -111,7 +112,7 @@ namespace _3alegny.Service_layer
                     {
                         order.Status = status;
                         await _context.Orders.ReplaceOneAsync(o => o.Id == order.Id, order);
-                        if (status == "Accepted")
+                        if (status == "Accept")
                         {
                             //Remove the quantity of the drugs in the order from the drugs collection
                             foreach (var drug in order.Drugs)
@@ -121,11 +122,11 @@ namespace _3alegny.Service_layer
                                 await _context.Drugs.ReplaceOneAsync(d => d.Name == drug.Name, drugInStock);
                             }
                         }
-                        else if(status == "Cancel")
+                        else if(status == "Reject")
                         {
-                            //remove order from patient orders list and from order collections
+                            
                             patient.Orders.Remove(order);
-                            await _context.Orders.DeleteOneAsync(o => o.Id == order.Id);
+                            
                         }
 
                     }

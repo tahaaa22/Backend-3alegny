@@ -95,15 +95,37 @@ namespace _3alegny.Service_layer
         }
 
         // Get all appointments for a specific hospital
-        public async Task<List<Appointments>> GetHospitalAppointments(string hospitalName)
+        public async Task<HospitalAppointmentResponse> GetHospitalAppointments(string hospitalid)
         {
+            //Get all appointments for a specific hospital and list of patients of those appointments
             try
             {
-                return await _context.Appointments.Find(a => a.HospitalName == hospitalName).ToListAsync();
+                var hospitalId = ObjectId.Parse(hospitalid);
+                var hospital = await _context.Hospitals.Find(h => h.Id == hospitalId).FirstOrDefaultAsync();
+                if (hospital == null)
+                {
+                    return new HospitalAppointmentResponse { IsSuccess = false, Message = "Hospital not found" };
+                }
+
+                var appointments = await _context.Appointments.Find(a => a.HospitalId == hospitalid).ToListAsync();
+                if (appointments.Count == 0)
+                {
+                    return new HospitalAppointmentResponse { IsSuccess = false, Message = "No appointments found" };
+                }
+
+                var patients = new List<Patient>();
+                foreach (var appointment in appointments)
+                {
+                    var patientId = ObjectId.Parse(appointment.PatientId);
+                    var patient = await _context.Patients.Find(p => p.Id == patientId).FirstOrDefaultAsync();
+                    patients.Add(patient);
+                }
+
+                return new HospitalAppointmentResponse { IsSuccess = true, Appointments = appointments, Patient = patients };
             }
             catch (Exception ex)
             {
-                return null;
+                return new HospitalAppointmentResponse { IsSuccess = false, Message = $"Error: {ex.Message}" };
             }
         }
 
@@ -156,6 +178,9 @@ namespace _3alegny.Service_layer
             }
         }
 
+       
+
+
         // Cancel an appointment
         public async Task<AppointmentResponse<string>> CancelAppointment(string pid, string time)
         {
@@ -199,3 +224,11 @@ namespace _3alegny.Service_layer
         public bool IsSuccess { get; set; }
         public T Data { get; set; }
     }
+
+    public class HospitalAppointmentResponse
+{
+    public string Message { get; set; }
+    public bool IsSuccess { get; set; }
+    public List<Patient> Patient { get; set; }
+    public List<Appointments> Appointments { get; set; }
+}
