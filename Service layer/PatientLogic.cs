@@ -179,8 +179,8 @@ namespace _3alegny.Service_layer
                     Diagnosis = phr.Diagnosis,
                     Medication = phr.Medication,
                     FamilyHistory = phr.FamilyHistory,
-                    ImagingResults = phr.ImagingResults,
-                    LabResultsURL = phr.LabResultsURL,
+                    ImagingResults =  phr.ImagingResults ,
+                    LabResultsURL =  phr.LabResultsURL ,
                     MedicalProcedures = phr.MedicalProcedures,
                     PrescriptionHistory = phr.PrescriptionHistory,
                     Weight = new List<int> { phr.Weight },
@@ -228,8 +228,8 @@ namespace _3alegny.Service_layer
                 existingPHR.Diagnosis = updatedPhr.Diagnosis;
                 existingPHR.Medication = updatedPhr.Medication;
                 existingPHR.FamilyHistory = updatedPhr.FamilyHistory;
-                existingPHR.ImagingResults = updatedPhr.ImagingResults;
-                existingPHR.LabResultsURL = updatedPhr.LabResultsURL;
+                existingPHR.ImagingResults.AddRange(updatedPhr.ImagingResults);
+                existingPHR.LabResultsURL.AddRange(updatedPhr.LabResultsURL);
                 existingPHR.MedicalProcedures = updatedPhr.MedicalProcedures;
                 existingPHR.PrescriptionHistory = updatedPhr.PrescriptionHistory;
                 existingPHR.Weight.Add(updatedPhr.Weight);

@@ -18,8 +18,8 @@ namespace _3alegny.Entities
         public string Diagnosis { get; set; }
         public string Medication { get; set; }
         public string FamilyHistory { get; set; }
-        public string ImagingResults { get; set; }
-        public string LabResultsURL { get; set; }
+        public List<string> ImagingResults { get; set; }
+        public List<string> LabResultsURL { get; set; }
         public string MedicalProcedures { get; set; }
         public string PrescriptionHistory { get; set; }
         public List<int> Weight { get; set; } = new List<int>();
