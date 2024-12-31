@@ -151,12 +151,18 @@ namespace _3alegny.Service_layer
             try
             {
                 //Get all orders by pharmacy id AND list of order ids
-                var orders = await _context.Orders.Find(o => o.PharmacyId == pharmacyId).ToListAsync();
+                var pharmacy = await _context.Pharmacies.Find(p => p.Id.ToString() == pharmacyId).FirstOrDefaultAsync();
+                if (pharmacy == null)
+                {
+                    return new getorderid { IsSuccess = false, Message = "Pharmacy not found" };
+                }
+                var orders = pharmacy.Orders;
                 if (orders.Count == 0)
                 {
                     return new getorderid { IsSuccess = false, Message = "No orders found" };
                 }
                 else {
+                    Console.WriteLine(orders.Count);
                     List<string> orderid = new List<string>();
                     foreach (var order in orders)
                     {

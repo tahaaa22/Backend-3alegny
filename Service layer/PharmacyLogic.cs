@@ -142,6 +142,7 @@ namespace _3alegny.Service_layer
                 
                 await _context.Pharmacies.ReplaceOneAsync(p => p.Id == ObjectId.Parse(pharmacyId), pharmacy);
 
+
                 return new DrugsResult
                 {
                     IsSuccess = true,
