@@ -173,6 +173,7 @@ namespace _3alegny.Service_layer
                 // Map PostPHR to PHR
                 var PHR = new PHR
                 {
+                    
                     PatientId = pid,
                     Allergies = phr.Allergies,
                     ChronicIllness = phr.ChronicIllness,
@@ -257,7 +258,7 @@ namespace _3alegny.Service_layer
             }
         }
         //Get PHR by id
-        public async Task<patientPHR<PHR>> GetPHR(string patientId)
+        public async Task<patientPHR<PHRresponse>> GetPHR(string patientId)
         {
             try
             {
@@ -265,12 +266,13 @@ namespace _3alegny.Service_layer
                 var patient = await _context.Patients.Find(p => p.Id == ObjectId.Parse(patientId)).FirstOrDefaultAsync();
                 if (patient == null)
                 {
-                    return new patientPHR<PHR> { IsSuccess = false, Message = "Patient not found." };
+                    return new patientPHR<PHRresponse> { IsSuccess = false, Message = "Patient not found." };
                 }
 
                 // Retrieve the PHR associated with the patient
-                var phr = new PHR {
-                    Id = patient.PHR.Id,
+                var phr = new PHRresponse
+                {
+                    PHRId = patient.PHR.Id.ToString(),
                     PatientId = patient.PHR.PatientId,
                     Notes = patient.PHR.Notes,
                     MedicalCondition = patient.PHR.MedicalCondition,
@@ -291,14 +293,14 @@ namespace _3alegny.Service_layer
                 if (phr == null)
                 {
                     
-                    return new patientPHR<PHR> { IsSuccess = false, Message = "PHR not found for the given patient." };
+                    return new patientPHR<PHRresponse> { IsSuccess = false, Message = "PHR not found for the given patient." };
                 }
 
-                return new patientPHR<PHR> { IsSuccess = true, Data = phr };
+                return new patientPHR<PHRresponse> { IsSuccess = true, Data = phr };
             }
             catch (Exception e)
             {
-                return new patientPHR<PHR> { IsSuccess = false, Message = $"Error: {e.Message}" };
+                return new patientPHR<PHRresponse> { IsSuccess = false, Message = $"Error: {e.Message}" };
             }
         }
         public async Task<AdminResult<List<AllPharmaciesResponse>>> GetAllPharmacies()
@@ -629,6 +631,27 @@ public class DepartmentsResponse
     public string departmentId { get; set; }
     public string departmentName { get; set; }
     public int AppointmentFee { get; set; } = 0;
+}
+
+
+public class PHRresponse
+{
+    public string PHRId { get; set; }
+    public string PatientId { get; set; }
+    public string Notes { get; set; }
+    public string? MedicalCondition { get; set; }
+    public string Allergies { get; set; }
+    public string ChronicIllness { get; set; }
+    public string Diagnosis { get; set; }
+    public string Medication { get; set; }
+    public string FamilyHistory { get; set; }
+    public List<string> ImagingResults { get; set; }
+    public List<string> LabResultsURL { get; set; }
+    public string MedicalProcedures { get; set; }
+    public string PrescriptionHistory { get; set; }
+    public List<int> Weight { get; set; } = new List<int>();
+    public List<int> Height { get; set; } = new List<int>();
+    public List<int> BMI { get; set; } = new List<int>();
 }
 
 public class AllhospitalResponse
