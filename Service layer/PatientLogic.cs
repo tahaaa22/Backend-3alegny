@@ -269,9 +269,28 @@ namespace _3alegny.Service_layer
                 }
 
                 // Retrieve the PHR associated with the patient
-                var phr = patient.PHR;
+                var phr = new PHR {
+                    Id = patient.PHR.Id,
+                    PatientId = patient.PHR.PatientId,
+                    Notes = patient.PHR.Notes,
+                    MedicalCondition = patient.PHR.MedicalCondition,
+                    Allergies = patient.PHR.Allergies,
+                    ChronicIllness = patient.PHR.ChronicIllness,
+                    Diagnosis = patient.PHR.Diagnosis,
+                    Medication = patient.PHR.Medication,
+                    FamilyHistory = patient.PHR.FamilyHistory,
+                    ImagingResults = patient.PHR.ImagingResults,
+                    LabResultsURL = patient.PHR.LabResultsURL,
+                    MedicalProcedures = patient.PHR.MedicalProcedures,
+                    PrescriptionHistory = patient.PHR.PrescriptionHistory,
+                    Weight = patient.PHR.Height,
+                    Height = patient.PHR.Height,
+                    BMI = patient.PHR.BMI
+                };
+
                 if (phr == null)
                 {
+                    
                     return new patientPHR<PHR> { IsSuccess = false, Message = "PHR not found for the given patient." };
                 }
 
@@ -559,7 +578,8 @@ public class TopdoctorResponse
 public class patientPHR<T> 
 {
     public bool IsSuccess { get; set; }
-    public string Message { get; set; }
+    public string? Message { get; set; }
+    public string? PHRId { get; set; }
     public T? Data { get; set; }
 }
 
