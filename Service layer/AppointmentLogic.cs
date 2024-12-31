@@ -17,7 +17,7 @@ namespace _3alegny.Service_layer
         }
 
         // Schedule an appointment
-        public async Task<AppointmentResponse<string>> ScheduleAppointment(string pid, AppointmentRequest Appointment)
+        public async Task<AppointmentResponse<string>> ScheduleAppointment(string pid, string HospitalID, AppointmentRequest Appointment)
         {
             try
             {
@@ -32,13 +32,17 @@ namespace _3alegny.Service_layer
                     Department = Appointment.Department,
                     PHR = patient.PHR,
                     PatientId = pid,
-                    HospitalName = Appointment.HospitalName
+                    HospitalName = Appointment.HospitalName,
+                    HospitalId = HospitalID
                 };
 
                 await _context.Appointments.InsertOneAsync(appointment);
                 // Add the new appointment to the patient's Appointments list
                 var update = Builders<Patient>.Update.Push(p => p.Appointments, appointment);
+                var updateHospital = Builders<Hospital>.Update.Push(p => p.Appointments, appointment);
                 await _context.Patients.UpdateOneAsync(p => p.Id == patientid, update);
+                await _context.Hospitals.UpdateOneAsync(p => p.Id.ToString() == HospitalID, updateHospital);
+
 
                 return new AppointmentResponse<string> { IsSuccess = true, Message = "Appointement Schedueled Successfully" }; ;
             }

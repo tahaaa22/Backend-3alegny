@@ -94,9 +94,9 @@ public record OrderRequest
     public string PatientId { get; set; }
     public string PharmacyId { get; set; }
     public DateTime Created { get; set; }
-    public List<string> Drugs { get; set; }
-    public List<string> DrugCategories { get; set; }
-    public List<int> DrugQuantities { get; set; }
+    public string Drug { get; set; }
+    public string DrugCategory { get; set; }
+    public int DrugQuantity { get; set; }
     public string street { get; set; }
     public string city { get; set; }
     public string zipcode { get; set; }

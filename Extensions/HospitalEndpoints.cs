@@ -230,7 +230,7 @@ public static class HospitalEndpoints
        OperationId = "CreateHospitalBill"
    });
 
-        app.MapGet("/Hospital/get-ehr-by-patient/{patientId}", async ([FromServices] HospitalLogic logic, string patientId) =>
+        app.MapGet("/Hospital/get-ehr/{patientId}", async ([FromServices] HospitalLogic logic, string patientId) =>
         {
             try
             {

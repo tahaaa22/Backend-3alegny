@@ -250,20 +250,20 @@ namespace _3alegny.Service_layer
                 throw new Exception("Invalid Patient ID");
 
             // Find the EHR document by PatientId
-            var ehr = await _context.EHRs.Find(e => e.PatientId == patientId).FirstOrDefaultAsync();
+            var patientehr = await _context.Patients.Find(e => e.Id == ObjectId.Parse(patientId)).FirstOrDefaultAsync();
 
-            if (ehr == null)
+            if (patientehr.EHR == null)
                 throw new Exception("EHR not found");
 
             // Ensure the patient's EHR field is set to this EHR document if it's not already
             var patient = await _context.Patients.Find(p => p.Id == ObjectId.Parse(patientId)).FirstOrDefaultAsync();
             if (patient != null && patient.EHR == null)
             {
-                var updateDefinition = Builders<Patient>.Update.Set(p => p.EHR, ehr);
+                var updateDefinition = Builders<Patient>.Update.Set(p => p.EHR, patientehr.EHR);
                 await _context.Patients.UpdateOneAsync(p => p.Id == patient.Id, updateDefinition);
             }
 
-            return ehr;
+            return patientehr.EHR;
         }
 
         public async Task<string> UpdateEHRById(string ehrId, EHR updatedEHR)

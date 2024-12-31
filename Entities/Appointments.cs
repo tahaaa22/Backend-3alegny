@@ -13,5 +13,7 @@ namespace _3alegny.Entities
         public PHR PHR { get; set; }
         public string PatientId { get; set; }
         public string HospitalName { get; set; }
+
+        public string HospitalId { get; set; }
     }
 }

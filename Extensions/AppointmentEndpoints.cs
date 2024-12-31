@@ -6,9 +6,9 @@ public static class AppointmentEndpoints
     public static void MapAppointmentEndpoints(this WebApplication app)
     {
         // Schedule an appointment
-        app.MapPost("/appointment/schedule/{id}", (Func<string, AppointmentRequest, AppointmentLogic, IResult>)((pid, request, logic) =>
+        app.MapPost("/appointment/schedule/{id}", (Func<string, string, AppointmentRequest, AppointmentLogic, IResult>)((pid, HospitalID, request, logic) =>
         {
-            var result = logic.ScheduleAppointment(pid, request).Result;
+            var result = logic.ScheduleAppointment(pid, HospitalID, request).Result;
             return result.IsSuccess ? Results.Ok(result.Message) : Results.BadRequest(result.Message);
         })).WithTags("Patient")
         .WithOpenApi(operation => new(operation)
@@ -121,6 +121,8 @@ public static class AppointmentEndpoints
         public string Department { get; set; }
         public string HospitalName { get; set; }
         public string PHRId { get; set; }
+
+        
 
     }
 }

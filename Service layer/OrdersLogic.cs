@@ -33,34 +33,33 @@ namespace _3alegny.Service_layer
                     Id = oid,
                     PatientId = patientId,
                     PharmacyId = pharmacyId,
-                    //Adding the list of drugs to the order
-                    Drugs = neworder.Drugs.Select((drug, index) => new Drugs
-                    {
-                        Name = drug,
-                        Category = neworder.DrugCategories[index],
-                        Quantity = neworder.DrugQuantities[index],      
-                        Price = _context.Drugs.Find(d => d.Name == drug).FirstOrDefault().Price
-                    }).ToList(),
-                    //Calculating total drug quantity
-                    TotalDrugQuantity = neworder.DrugQuantities.Sum(),
-                    //Calculating the total cost of the order
-                    TotalCost = (int)neworder.Drugs.Select((drug, index) => neworder.DrugQuantities[index] * _context.Drugs.Find(d => d.Name == drug).FirstOrDefault().Price).Sum(),
                     OrderDate = DateTime.Now,
                     Status = "Pending",
-                    // Adding the address to the order
+                    TotalCost = neworder.DrugQuantity * ((int)_context.Drugs.Find(d => d.Name == neworder.Drug).FirstOrDefault().Price),
                     OrderAddress = new Address
                     {
                         City = neworder.city,
                         Street = neworder.street,
                         State = neworder.state,
-                        ZipCode = neworder.zipcode
-
+                        ZipCode = neworder.zipcode,
                     }
-
                 };
+                    var drug = new Drugs { Id = ObjectId.GenerateNewId(), Name = neworder.Drug, Category = neworder.DrugCategory , Quantity= neworder.DrugQuantity};
+                    order.Drugs.Add(drug);
+
+                var pharmacy = await _context.Pharmacies.Find(p => p.Id.ToString() == pharmacyId).FirstOrDefaultAsync();
+                if (pharmacy == null)
+                {
+                    return new OrderResult<Order> { IsSuccess = false, Message = "Pharmacy not found" };
+                }
+                order.PharmacyName = pharmacy.Name;
                 //Add the order to the orders collection and patient collection
                 await _context.Orders.InsertOneAsync(order);
                 patient.Orders.Add(order);
+                
+                pharmacy.Orders.Add(order);
+                await _context.Pharmacies.ReplaceOneAsync(p => p.Id.ToString() == pharmacyId, pharmacy);
+
                 await _context.Patients.ReplaceOneAsync(h => h.Id == patient.Id, patient);
                 return new OrderResult<Order> { IsSuccess = true, Data = order,Message = "Order created successfully" };
             }
