@@ -112,6 +112,19 @@ namespace _3alegny.Service_layer
                     {
                         order.Status = status;
                         await _context.Orders.ReplaceOneAsync(o => o.Id == order.Id, order);
+                        await _context.Patients.ReplaceOneAsync(p => p.Id == patientID, patient);
+                        // Update the order in the pharmacy's orders list
+                        var pharmacy = await _context.Pharmacies.Find(p => p.Id.ToString() == order.PharmacyId).FirstOrDefaultAsync();
+                        if (pharmacy != null)
+                        {
+                            var pharmacyOrder = pharmacy.Orders.FirstOrDefault(o => o.Id == order.Id);
+                            if (pharmacyOrder != null)
+                            {
+                                pharmacyOrder.Status = status;
+                                await _context.Pharmacies.ReplaceOneAsync(p => p.Id == pharmacy.Id, pharmacy);
+                            }
+                        }
+
                         if (status == "Accept")
                         {
                             // Remove the quantity of the drugs in the order from the drugs collection
