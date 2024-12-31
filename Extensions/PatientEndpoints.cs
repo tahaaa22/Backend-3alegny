@@ -126,7 +126,7 @@ public static class PatientEndpoints
      });
 
         //get all hospitals
-        app.MapGet("/patient/department/{DepartmentId}/TopDoctor", async (string DepartmentId,string HospitalId, [FromServices] PatientLogic logic) =>
+        app.MapGet("/patient/department/TopDoctor", async (string DepartmentId,string HospitalId, [FromServices] PatientLogic logic) =>
         {
             var result = await logic.GetTopDoctor(DepartmentId, HospitalId);
             return Results.Ok(result);
