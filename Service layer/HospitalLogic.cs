@@ -22,7 +22,7 @@ namespace _3alegny.Service_layer
             if (hospital == null)
                 throw new Exception("Hospital not found");
 
-            var newDepartment = new Department {Id = new ObjectId()  ,Name = departmentName, AppointmentFee = AppointmentFee };
+            var newDepartment = new Department {Id = ObjectId.GenerateNewId(),  Name = departmentName, AppointmentFee = AppointmentFee };
             hospital.Departments.Add(newDepartment);
 
             await _context.Hospitals.ReplaceOneAsync(h => h.Id == hospital.Id, hospital);

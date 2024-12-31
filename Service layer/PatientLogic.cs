@@ -282,20 +282,52 @@ namespace _3alegny.Service_layer
                 return new patientPHR<PHR> { IsSuccess = false, Message = $"Error: {e.Message}" };
             }
         }
-        public async Task<AdminResult<List<Pharmacy>>> GetAllPharmacies()
+        public async Task<AdminResult<List<AllPharmaciesResponse>>> GetAllPharmacies()
         {
             try
             {
-                var pharmacy = await _context.Pharmacies.Find(_ => true).ToListAsync();
-                if (pharmacy == null || !pharmacy.Any())
+                var pharmacies = await _context.Pharmacies.Find(_ => true).ToListAsync();
+                if (pharmacies == null || !pharmacies.Any())
                 {
-                    return new AdminResult<List<Pharmacy>> { IsSuccess = false, Message = "No Patients found." };
+                    return new AdminResult<List<AllPharmaciesResponse>> { IsSuccess = false, Message = "No Patients found." };
                 }
-                return new AdminResult<List<Pharmacy>> { IsSuccess = true, Data = pharmacy, Message = "all users returned" };
+                var ListOfPharmacies = new List<AllPharmaciesResponse>();
+
+                foreach (var pharmacy in pharmacies)
+                {
+                    var holder = new AllPharmaciesResponse();
+                    holder.PharmacyId = pharmacy.Id.ToString();
+                    holder.PharmacyName = pharmacy.Name;
+                    holder.contactInfo = pharmacy.contactInfo;
+                    holder.Address = pharmacy.Address;
+                    holder.ImageUrl = pharmacy.ImageUrl;
+                    holder.Address = pharmacy.Address;
+                    holder.Rating = pharmacy.Rating;
+                    var ListOfDrugs = new List<DrugListResponse>();
+                    var CurrentDrug = new DrugListResponse();
+
+                    foreach (var drug in  pharmacy.Drugs)
+                    {
+                        CurrentDrug.DrugId= drug.Id.ToString(); // Change Id to string
+                        CurrentDrug.DName = drug.Name;
+                        CurrentDrug.Description = drug.Description;
+                        CurrentDrug.Category = drug.Category;
+                        CurrentDrug.ExpiryDate = drug.ExpiryDate;
+                        CurrentDrug.Manufacturer = drug.Manufacturer;
+                        CurrentDrug.Price = drug.Price;
+                        CurrentDrug.Quantity = drug.Quantity;
+                        CurrentDrug.Type = drug.Type;
+                        ListOfDrugs.Add(CurrentDrug);
+                    }
+                    holder.Drugs = ListOfDrugs;
+                    ListOfPharmacies.Add(holder);
+                }
+
+                return new AdminResult<List<AllPharmaciesResponse>> { IsSuccess = true, Data = ListOfPharmacies, Message = "all users returned" };
             }
             catch (Exception ex)
             {
-                return new AdminResult<List<Pharmacy>> { IsSuccess = false, Message = $"Error: {ex.Message}" };
+                return new AdminResult<List<AllPharmaciesResponse>> { IsSuccess = false, Message = $"Error: {ex.Message}" };
             }
         }
 
@@ -331,12 +363,17 @@ namespace _3alegny.Service_layer
                     holder.Rating = hospital.Rating;
                     holder.Doctors = hospital.Doctors;
                     holder.InsuranceAccepted = hospital.InsuranceAccepted;
+                    var ListOfDepartments= new List<DepartmentsResponse>();
+                    var CurrentDepartment = new DepartmentsResponse();
+                    
                     foreach (var department in hospital.Departments)
                     {
-                        holder.departmentId = department.Id.ToString(); // Change Id to string
-                        holder.departmentName = department.Name;
-                        holder.AppointmentFee = department.AppointmentFee;
+                        CurrentDepartment.departmentId = department.Id.ToString(); // Change Id to string
+                        CurrentDepartment.departmentName = department.Name;
+                        CurrentDepartment.AppointmentFee = department.AppointmentFee;
+                        ListOfDepartments.Add(CurrentDepartment);
                     }
+                    holder.departments = ListOfDepartments;
                     listHospitals.Add(holder);
                 }
     
@@ -544,6 +581,35 @@ public class FilteredHospitalResponse
 
 }
 
+public class DrugListResponse
+{
+    public string DrugId { get; set; }
+    public string DName { get; set; }
+    public string Description { get; set; }
+    public double Price { get; set; }
+    public int Quantity { get; set; }
+    public DateTime ExpiryDate { get; set; }
+    public string? Manufacturer { get; set; }
+    public string? Category { get; set; }
+    public string? Type { get; set; }
+}
+public class AllPharmaciesResponse
+{
+    public string PharmacyId { get; set; }
+    public string? PharmacyName { get; set; }
+    public ContactInfo? contactInfo { get; set; }
+    public Address? Address { get; set; }
+    public string ImageUrl { get; set; } // Add image URL property
+    public Double Rating { get; set; } = 0.0;
+    public List<DrugListResponse> Drugs { get; set; }   
+}
+
+public class DepartmentsResponse
+{
+    public string departmentId { get; set; }
+    public string departmentName { get; set; }
+    public int AppointmentFee { get; set; } = 0;
+}
 
 public class AllhospitalResponse
 {
@@ -553,12 +619,10 @@ public class AllhospitalResponse
     public ContactInfo? contactInfo { get; set; }
     public Address? Address { get; set; }
     public string ImageUrl { get; set; } // Add image URL property
-    public string departmentId { get; set; }
-    public string departmentName { get; set; }
-
-    public int AppointmentFee { get; set; } = 0;
+   public List<DepartmentsResponse> departments { get; set; }
     public List<Appointments> Appointments { get; set; } = new List<Appointments>();
     public Double? Rating { get; set; } = 0.0;
     public List<Doctors> Doctors { get; set; } = new List<Doctors>();
     public List<Insurance> InsuranceAccepted { get; set; } = new List<Insurance>();
 }
+
