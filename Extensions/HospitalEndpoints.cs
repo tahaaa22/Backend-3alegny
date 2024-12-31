@@ -230,11 +230,11 @@ public static class HospitalEndpoints
        OperationId = "CreateHospitalBill"
    });
 
-        app.MapGet("/Hospital/get-ehr/{ehrId}", async ([FromServices] HospitalLogic logic, string ehrId) =>
+        app.MapGet("/Hospital/get-ehr-by-patient/{patientId}", async ([FromServices] HospitalLogic logic, string patientId) =>
         {
             try
             {
-                var ehr = await logic.GetEHRById(ehrId); // This should work if only one GetEHRById exists
+                var ehr = await logic.GetEHRByPatientId(patientId);
                 return Results.Ok(new { Success = true, Message = "EHR found", EHR = ehr });
             }
             catch (Exception e)
@@ -242,13 +242,14 @@ public static class HospitalEndpoints
                 return Results.BadRequest(new { Success = false, Message = e.Message });
             }
         })
-.WithTags("Hospital")
-.WithOpenApi(operation => new(operation)
-{
-    Summary = "Get EHR by ID",
-    Description = "Fetches an Electronic Health Record (EHR) document by its ID.",
-    OperationId = "GetEHRById"
-});
+ .WithTags("Hospital")
+ .WithOpenApi(operation => new(operation)
+ {
+     Summary = "Get EHR by Patient ID",
+     Description = "Fetches an Electronic Health Record (EHR) document by the Patient's ID.",
+     OperationId = "GetEHRByPatientId"
+ });
+
 
 
 
