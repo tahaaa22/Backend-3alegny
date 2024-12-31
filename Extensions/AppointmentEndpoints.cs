@@ -89,7 +89,7 @@ public static class AppointmentEndpoints
         {
             var result = logic.GetHospitalAppointments(hid).Result;
             return Results.Ok(result);
-        })).WithTags("Admin")
+        })).WithTags("Hospital")
         .WithOpenApi(operation => new(operation)
         {
             Summary = "Get hospital appointments",

@@ -90,7 +90,7 @@ namespace _3alegny.Service_layer
         }
 
         //  Update order status and if order status is accepted we remove the quntity of the drugs in the order from the drugs collection
-        public async Task<OrderResult<string>> UpdateOrderStatus(string patientId,string status,string oid)
+        public async Task<OrderResult<string>> UpdateOrderStatus(string patientId, string status, string oid)
         {
             try
             {
@@ -105,40 +105,43 @@ namespace _3alegny.Service_layer
                 {
                     return new OrderResult<string> { IsSuccess = false, Message = "No orders found" };
                 }
-                //Update order status
+                // Update order status
                 foreach (var order in orders)
                 {
-                    if (order.Id == ObjectId.Parse(oid) && order.Status!= status)
+                    if (order.Id == ObjectId.Parse(oid) && order.Status != status)
                     {
                         order.Status = status;
                         await _context.Orders.ReplaceOneAsync(o => o.Id == order.Id, order);
                         if (status == "Accept")
                         {
-                            //Remove the quantity of the drugs in the order from the drugs collection
+                            // Remove the quantity of the drugs in the order from the drugs collection
                             foreach (var drug in order.Drugs)
                             {
                                 var drugInStock = await _context.Drugs.Find(d => d.Name == drug.Name).FirstOrDefaultAsync();
                                 drugInStock.Quantity -= drug.Quantity;
                                 await _context.Drugs.ReplaceOneAsync(d => d.Name == drug.Name, drugInStock);
                             }
+                            return new OrderResult<string> { IsSuccess = true, Message = "Order status updated successfully, order accepted!" };
                         }
-                        else if(status == "Reject")
+                        else if (status == "Reject")
                         {
-                            
                             patient.Orders.Remove(order);
-                            
+                            return new OrderResult<string> { IsSuccess = true, Message = "Order status updated, order canceled" };
                         }
-
+                        else
+                        {
+                            return new OrderResult<string> { IsSuccess = false, Message = "Invalid status" };
+                        }
                     }
                 }
-                return new OrderResult<string> { IsSuccess = true, Message = "Order status updated successfully" };
+                return new OrderResult<string> { IsSuccess = false, Message = "Order not found or status unchanged" };
             }
             catch (Exception ex)
             {
                 return new OrderResult<string> { IsSuccess = false, Message = ex.Message };
             }
-
         }
+
 
 
 
