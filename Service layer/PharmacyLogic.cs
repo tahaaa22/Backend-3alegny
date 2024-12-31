@@ -170,6 +170,7 @@ namespace _3alegny.Service_layer
                 var projection = Builders<Drugs>.Projection
                     .Include(d => d.Name)
                     .Include(d => d.Quantity)
+                    .Include(d => d.Price)
                     .Exclude("_id");
 
                 var drugs = await _context.Drugs
