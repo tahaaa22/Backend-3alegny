@@ -146,17 +146,29 @@ namespace _3alegny.Service_layer
 
 
         //Get all orders by pharmacy id
-        public async Task<OrderResult<List<Order>>> GetPharmacyOrders(string pharmacyId)
+        public async Task<getorderid> GetPharmacyOrders(string pharmacyId)
         {
             try
             {
+                //Get all orders by pharmacy id AND list of order ids
                 var orders = await _context.Orders.Find(o => o.PharmacyId == pharmacyId).ToListAsync();
-                return new OrderResult<List<Order>> { IsSuccess = true, Data = orders };
+                if (orders.Count == 0)
+                {
+                    return new getorderid { IsSuccess = false, Message = "No orders found" };
+                }
+                else {
+                    List<string> orderid = new List<string>();
+                    foreach (var order in orders)
+                    {
+                        orderid.Add(order.Id.ToString());
+                    }
+                    return new getorderid { IsSuccess = true, OrderId = orderid, Orders = orders };
+                }
 
             }
             catch (Exception ex) 
             {
-                return new OrderResult<List<Order>> { IsSuccess = false, Message = ex.Message };
+                return new getorderid { IsSuccess = false, Message = ex.Message };
             }
         }
 
@@ -211,4 +223,12 @@ public class OrderResult<T>
     public bool IsSuccess { get; set; }
     public string Message { get; set; }
     public T Data { get; set; }
+}
+
+public class getorderid
+{
+    public bool IsSuccess { get; set; }
+    public string Message { get; set; }
+    public List<string> OrderId { get; set; }
+    public List<Order> Orders { get; set; }
 }
