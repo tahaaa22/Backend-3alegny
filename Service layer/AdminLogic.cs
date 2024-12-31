@@ -1,6 +1,5 @@
 ﻿using _3alegny.Entities;
 using _3alegny.RepoLayer;
-using Microsoft.AspNetCore.Http.HttpResults;
 using MongoDB.Driver;
 using MongoDB.Bson;
 using static AdminEndpoints;
