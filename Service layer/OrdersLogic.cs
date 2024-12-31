@@ -89,6 +89,59 @@ namespace _3alegny.Service_layer
             }
         }
 
+        //  Update order status and if order status is accepted we remove the quntity of the drugs in the order from the drugs collection
+        public async Task<OrderResult<string>> UpdateOrderStatus(string patientId,string status,string oid)
+        {
+            try
+            {
+                var patientID = ObjectId.Parse(patientId);
+                var patient = await _context.Patients.Find(p => p.Id == patientID).FirstOrDefaultAsync();
+                if (patient == null)
+                {
+                    return new OrderResult<string> { IsSuccess = false, Message = "Patient not found" };
+                }
+                var orders = await _context.Orders.Find(o => o.PatientId == patientId).ToListAsync();
+                if (orders.Count == 0)
+                {
+                    return new OrderResult<string> { IsSuccess = false, Message = "No orders found" };
+                }
+                //Update order status
+                foreach (var order in orders)
+                {
+                    if (order.Id == ObjectId.Parse(oid) && order.Status!= status)
+                    {
+                        order.Status = status;
+                        await _context.Orders.ReplaceOneAsync(o => o.Id == order.Id, order);
+                        if (status == "Accepted")
+                        {
+                            //Remove the quantity of the drugs in the order from the drugs collection
+                            foreach (var drug in order.Drugs)
+                            {
+                                var drugInStock = await _context.Drugs.Find(d => d.Name == drug.Name).FirstOrDefaultAsync();
+                                drugInStock.Quantity -= drug.Quantity;
+                                await _context.Drugs.ReplaceOneAsync(d => d.Name == drug.Name, drugInStock);
+                            }
+                        }
+                        else if(status == "Cancel")
+                        {
+                            //remove order from patient orders list and from order collections
+                            patient.Orders.Remove(order);
+                            await _context.Orders.DeleteOneAsync(o => o.Id == order.Id);
+                        }
+
+                    }
+                }
+                return new OrderResult<string> { IsSuccess = true, Message = "Order status updated successfully" };
+            }
+            catch (Exception ex)
+            {
+                return new OrderResult<string> { IsSuccess = false, Message = ex.Message };
+            }
+
+        }
+
+
+
         //Get all orders by pharmacy id
         public async Task<OrderResult<List<Order>>> GetPharmacyOrders(string pharmacyId)
         {

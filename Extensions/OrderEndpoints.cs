@@ -57,6 +57,19 @@ public static class OrderEndpoints
             OperationId = "GetPharmacyOrders",
         });
 
+        //Update Order Status
+        app.MapPut("/order/status/{patientid}", (Func<string,string,string, OrdersLogic, IResult>)((pid,status,oid, logic) =>
+        {
+            var result = logic.UpdateOrderStatus(pid,status,oid).Result;
+            return Results.Ok(result);
+        })).WithTags("Pharmacy")
+        .WithOpenApi(operation => new(operation)
+        {
+            Summary = "Update Order Status",
+            Description = "This endpoint allows pharmacies to change order status",
+            OperationId = "UpdateOrderStatus",
+        });
+
         //Cancel Order
         app.MapDelete("/order/cancel/{patientid}", (Func<string,string, OrdersLogic, IResult>)((pid,oid, logic) =>
         {

@@ -16,7 +16,7 @@ namespace _3alegny.Service_layer
             _context = context;
         }
         //Get pharmacy by id
-        public async Task<PharmacyResult<Pharmacy>> GetPharmacyById(string id)
+        public async Task<PharmacyResult<string>> GetPharmacyById(string id)
         {
             try
             {
@@ -24,13 +24,13 @@ namespace _3alegny.Service_layer
                 var user = await _context.Pharmacies.Find(u => u.Id == objectId).FirstOrDefaultAsync();
                 if (user == null)
                 {
-                    return new PharmacyResult<Pharmacy> { IsSuccess = false, Message = "hospital not found." };
+                    return new PharmacyResult<string> { IsSuccess = false, Message = "hospital not found." };
                 }
-                return new PharmacyResult<Pharmacy> { IsSuccess = true, Data = user, Message = $"hospital with {id} valid" };
+                return new PharmacyResult<string> { IsSuccess = true, Data = user.Name, Message = $"hospital with {id} valid" };
             }
             catch (Exception ex)
             {
-                return new PharmacyResult<Pharmacy> { IsSuccess = false, Message = $"Error: {ex.Message}" };
+                return new PharmacyResult<string> { IsSuccess = false, Message = $"Error: {ex.Message}" };
             }
         }
 
