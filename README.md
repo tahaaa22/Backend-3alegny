@@ -11,7 +11,7 @@ This document outlines the API endpoints for various user roles in the system.
 - **/signup**  
   Endpoint for user signup.
 
-### GET
+### POST
 - **/login**  
   Endpoint for user login.
 
